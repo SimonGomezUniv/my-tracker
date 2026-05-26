@@ -10,7 +10,7 @@ export async function registerServiceWorker() {
   }
 
   const env = window.__ENV__?.NODE_ENV || 'dev';
-  const swFile = env === 'prod' ? '/sw.js' : '/sw-dev.js';
+  const swFile = env === 'prod' ? './sw.js' : './sw-dev.js';
 
   try {
     const registration = await navigator.serviceWorker.register(swFile);

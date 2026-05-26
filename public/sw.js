@@ -5,34 +5,39 @@
 
 const CACHE_NAME = 'node-tracker-v1';
 
+// BASE : scope du SW (ex. 'https://user.github.io/my-tracker/' ou 'http://localhost:3000/')
+// Permet de fonctionner quel que soit le sous-chemin GitHub Pages.
+const BASE = self.registration.scope;
+
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/css/app.css',
-  '/css/components.css',
-  '/js/app.js',
-  '/js/router.js',
-  '/js/db.js',
-  '/js/store.js',
-  '/js/pwa.js',
-  '/js/views/dashboard.js',
-  '/js/views/new-entry.js',
-  '/js/views/history.js',
-  '/js/views/stats.js',
-  '/js/views/settings.js',
-  '/js/views/types/list.js',
-  '/js/views/types/editor.js',
-  '/js/views/groups/list.js',
-  '/js/views/groups/editor.js',
-  '/js/views/tags.js',
-  '/js/models/tag.js',
-  '/js/models/tracking-type.js',
-  '/js/models/tracking-group.js',
-  '/js/models/tracking-entry.js',
-  '/js/services/stats.service.js',
-  '/js/services/export.service.js',
-];
+  '',
+  'index.html',
+  'manifest.json',
+  'env.js',
+  'css/app.css',
+  'css/components.css',
+  'js/app.js',
+  'js/router.js',
+  'js/db.js',
+  'js/store.js',
+  'js/pwa.js',
+  'js/views/dashboard.js',
+  'js/views/new-entry.js',
+  'js/views/history.js',
+  'js/views/stats.js',
+  'js/views/settings.js',
+  'js/views/types/list.js',
+  'js/views/types/editor.js',
+  'js/views/groups/list.js',
+  'js/views/groups/editor.js',
+  'js/views/tags.js',
+  'js/models/tag.js',
+  'js/models/tracking-type.js',
+  'js/models/tracking-group.js',
+  'js/models/tracking-entry.js',
+  'js/services/stats.service.js',
+  'js/services/export.service.js',
+].map(p => BASE + p);
 
 self.addEventListener('install', (event) => {
   console.log('[sw] Install — mise en cache des assets');
@@ -56,8 +61,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Network-first pour /env.js (données dynamiques injectées par le serveur)
-  if (url.pathname === '/env.js') {
+  // Network-first pour env.js (données dynamiques injectées par le serveur)
+  if (url.pathname.endsWith('/env.js')) {
     event.respondWith(
       fetch(event.request).catch(() => caches.match(event.request))
     );
