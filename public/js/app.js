@@ -14,6 +14,7 @@ import typesListView from './views/types/list.js';
 import typesEditorView from './views/types/editor.js';
 import groupsListView from './views/groups/list.js';
 import groupsEditorView from './views/groups/editor.js';
+import { applyThemePreference, startThemeAutoSync } from './services/theme.service.js';
 
 // --- Enregistrement des routes ---
 
@@ -44,6 +45,8 @@ router.register('entry', async (params) => {
 // --- Init ---
 
 async function init() {
+  applyThemePreference();
+  startThemeAutoSync();
   await registerServiceWorker();
   router.init();
 }

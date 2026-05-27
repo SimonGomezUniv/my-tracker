@@ -4,6 +4,7 @@
 import db from '../db.js';
 import { showToast } from '../utils.js';
 import router from '../router.js';
+import { getHomeConfig, saveHomeConfig } from './home-customization.service.js';
 
 /**
  * Télécharge toutes les données en JSON
@@ -11,6 +12,10 @@ import router from '../router.js';
 export async function exportData() {
   try {
     const data = await db.exportAll();
+    data.__appConfig = {
+      home: getHomeConfig(),
+    };
+
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -40,6 +45,13 @@ export async function importData(file, replace = true) {
       throw new Error('Fichier invalide : format non reconnu.');
     }
     await db.importAll(data, replace);
+
+    // Restaurer la configuration UI exportée (si présente).
+    const importedHomeConfig = data.__appConfig?.home;
+    if (importedHomeConfig) {
+      saveHomeConfig(importedHomeConfig);
+    }
+
     showToast(`Import réussi (${replace ? 'remplacement' : 'fusion'}).`, 'success');
     router.navigate('dashboard');
   } catch (err) {

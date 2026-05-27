@@ -755,6 +755,80 @@
   font-size: 0.88rem;
 }
 
+.settings-subsection {
+  border-top: 1px dashed var(--color-border);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.settings-subsection h3 {
+  font-size: 0.9rem;
+  margin: 0 0 10px;
+  color: var(--color-text);
+}
+
+.settings-toggle-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.home-widget-config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home-widget-config-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.home-widget-config-item .text-muted {
+  margin-top: 4px;
+}
+
+.home-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home-order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.home-order-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.settings-mobile-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-mobile-icon-btn .btn-glyph {
+  line-height: 1;
+}
+
+.settings-mobile-icon-btn .btn-text {
+  white-space: nowrap;
+}
+
 /* ============================================================
    Helpers divers phases 3-5
    ============================================================ */
@@ -816,5 +890,90 @@
 .word-cloud-word:hover {
   opacity: 1 !important;
   transform: scale(1.08);
+}
+
+/* ============================================================
+   Calendrier stats
+   ============================================================ */
+.calendar-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar-widget-header {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.calendar-weekdays span {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.calendar-cell {
+  min-height: 72px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  background: var(--color-bg);
+}
+
+.calendar-cell--active {
+  border-color: color-mix(in srgb, var(--color-primary) 60%, var(--color-border) 40%);
+  background: color-mix(in srgb, var(--color-primary) 14%, var(--color-bg) 86%);
+}
+
+.calendar-cell--empty {
+  background: transparent;
+  border-style: dashed;
+  opacity: 0.45;
+}
+
+.calendar-day {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.calendar-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.calendar-icon-stack {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+@media (max-width: 767px) {
+  .settings-mobile-icon-btn {
+    min-width: 40px;
+    justify-content: center;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .settings-mobile-icon-btn .btn-text {
+    display: none;
+  }
+}
+
+.calendar-value {
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 

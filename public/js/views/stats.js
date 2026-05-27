@@ -165,6 +165,8 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) 
       </div>
     </section>` : '';
 
+  const calendarHtml = renderStatsCalendar(entries, type, end);
+
   // Nuage de mots (notes + champs string)
   const wordCloudHtml = renderWordCloud(buildWordFrequency(entries, type));
 
@@ -184,11 +186,103 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) 
       ${durationStatsHtml}
     </div>
     ${chartHtml}
+    ${calendarHtml}
     ${wordCloudHtml}
     <section class="editor-section">
       <h2 class="editor-section-title">Liste des saisies (${total})</h2>
       <div class="history-list">${listHtml}</div>
     </section>`;
+}
+
+function renderStatsCalendar(entries, type, endDate) {
+  if (!entries.length) return '';
+
+  const focus = new Date(endDate);
+  const year = focus.getFullYear();
+  const month = focus.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startOffset = (firstDay.getDay() + 6) % 7;
+  const totalCells = Math.ceil((startOffset + lastDay.getDate()) / 7) * 7;
+
+  const byDay = new Map();
+  entries.forEach(e => {
+    const d = new Date(e.timestamp);
+    if (d.getFullYear() !== year || d.getMonth() !== month) return;
+    const key = d.toISOString().slice(0, 10);
+    const arr = byDay.get(key) || [];
+    arr.push(e);
+    byDay.set(key, arr);
+  });
+
+  const monthLabel = firstDay.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  const weekDays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+
+  const cells = [];
+  for (let i = 0; i < totalCells; i++) {
+    const dayNum = i - startOffset + 1;
+    if (dayNum < 1 || dayNum > lastDay.getDate()) {
+      cells.push('<div class="calendar-cell calendar-cell--empty"></div>');
+      continue;
+    }
+
+    const d = new Date(year, month, dayNum);
+    const key = d.toISOString().slice(0, 10);
+    const dayEntries = byDay.get(key) || [];
+    const hasData = dayEntries.length > 0;
+    const value = hasData ? computeCalendarValue(dayEntries, type) : '';
+
+    cells.push(`
+      <div class="calendar-cell ${hasData ? 'calendar-cell--active' : ''}">
+        <span class="calendar-day">${dayNum}</span>
+        ${hasData ? `<span class="calendar-icon">${escapeHtml(type.icon || '📍')}</span>` : ''}
+        ${hasData ? `<span class="calendar-value">${escapeHtml(value)}</span>` : ''}
+      </div>`);
+  }
+
+  return `
+    <section class="editor-section">
+      <h2 class="editor-section-title">Calendrier</h2>
+      <div class="calendar-widget">
+        <div class="calendar-widget-header">${escapeHtml(monthLabel)}</div>
+        <div class="calendar-weekdays">${weekDays.map(d => `<span>${d}</span>`).join('')}</div>
+        <div class="calendar-grid">${cells.join('')}</div>
+      </div>
+    </section>`;
+}
+
+function computeCalendarValue(entries, type) {
+  const fields = type.fields || [];
+
+  const durationField = fields.find(f => f.type === 'duration');
+  if (durationField) {
+    const total = computeDurationTotal(entries, durationField.name);
+    if (total) {
+      return total.hours > 0
+        ? `${total.hours}h${String(total.minutes).padStart(2, '0')}`
+        : `${total.minutes}m`;
+    }
+  }
+
+  const ratingField = fields.find(f => f.type === 'rating');
+  if (ratingField) {
+    const vals = entries.map(e => Number(e.data?.[ratingField.name])).filter(v => !isNaN(v));
+    if (vals.length > 0) {
+      const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+      return `${avg.toFixed(1)}★`;
+    }
+  }
+
+  const numericField = fields.find(f => f.type === 'numeric');
+  if (numericField) {
+    const vals = entries.map(e => Number(e.data?.[numericField.name])).filter(v => !isNaN(v));
+    if (vals.length > 0) {
+      const sum = vals.reduce((a, b) => a + b, 0);
+      return String(sum % 1 === 0 ? sum : sum.toFixed(1));
+    }
+  }
+
+  return `${entries.length}`;
 }
 
 // ---- Nuage de mots ----

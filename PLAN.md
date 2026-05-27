@@ -241,3 +241,46 @@ Remplacer la navigation latérale par un menu sticky en haut avec 4 icônes:
 - [x] Les pages Types / Groupes / Tags sont rattachées au pôle Paramètre
 - [x] Suppression de l'entrée de navigation dédiée à "Nouvelle saisie"
 - [x] La création d'une nouvelle saisie reste accessible depuis la Home (saisie rapide)
+
+---
+
+## EPIC — Customisation de la page d'accueil
+
+### Objectifs
+
+- [x] Activer/désactiver les compteurs Home (saisies, trackings, groupes)
+- [x] Ajouter une section optionnelle "Stats personnalisées" sous la saisie rapide
+- [x] Permettre l'ajout de widgets stats configurables (type, période relative, tags)
+- [x] Ajouter un nouveau mode de restitution stats en calendrier (icônes + valeurs par jour)
+
+### Plan de livraison
+
+- [x] Créer un service de persistance des préférences Home (`localStorage`)
+- [x] Étendre la page Paramètres avec UI de configuration Home
+- [x] Étendre la Home pour lire la config et rendre les widgets choisis
+- [x] Étendre la page Stats avec un rendu calendrier du type filtré
+- [x] Ajouter les styles UI (widgets Home, config, calendrier)
+
+---
+
+## EPIC — Personnalisation avancée Home & UX mobile
+
+### Fonctionnalités demandées
+
+- [x] Mettre les stats personnalisées avant l'historique sur la Home
+- [x] Permettre de choisir l'ordre des blocs Home
+- [x] Autoriser plusieurs types de tracking dans le widget calendrier
+- [x] Simplifier l'UI Home en retirant les textes explicatifs
+- [x] Condenser l'affichage sur mobile (densité + nav compacte)
+- [x] Gérer un thème clair/sombre selon le thème système du téléphone
+- [x] Boutons Paramètres compacts mobile (icône + tooltip)
+- [x] Limiter les widgets Home à 3 sur mobile avec action Voir plus / Voir moins
+
+### Plan d'implémentation
+
+- [x] Étendre le modèle de config Home (ordre de sections + widget multi-types)
+- [x] Ajouter les contrôles d'ordre dans Paramètres (haut/bas)
+- [x] Adapter le rendu Home pour respecter l'ordre configuré
+- [x] Adapter le widget calendrier pour afficher des entrées multi-types
+- [x] Ajuster les styles mobile pour limiter la hauteur consommée
+- [x] Ajouter les variables light mode via `prefers-color-scheme`
