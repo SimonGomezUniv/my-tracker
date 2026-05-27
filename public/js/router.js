@@ -42,11 +42,11 @@ const router = (() => {
 
     const handler = routes.get(routeName);
     const container = document.getElementById('view-container');
-    const pageTitle = document.getElementById('page-title');
 
-    // Mettre à jour les liens actifs
+    // Mettre à jour le lien actif dans la navigation haute
     document.querySelectorAll('.nav-link').forEach(link => {
-      link.classList.toggle('active', link.dataset.route === routeName);
+      const routesForLink = (link.dataset.routes || '').split('|').filter(Boolean);
+      link.classList.toggle('active', routesForLink.includes(routeName));
     });
 
     if (!handler) {
@@ -64,7 +64,6 @@ const router = (() => {
     try {
       const result = await handler(params);
       container.innerHTML = result.html;
-      if (result.title && pageTitle) pageTitle.textContent = result.title;
       if (typeof result.bind === 'function') {
         requestAnimationFrame(() => result.bind());
       }

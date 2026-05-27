@@ -10,6 +10,16 @@ export default async function settingsView() {
     <div class="view-settings">
 
       <section class="settings-section">
+        <h2>Organisation du tracking</h2>
+        <p>Gérez ici la structure de votre suivi: types, groupes et tags.</p>
+        <div class="import-zone">
+          <a href="#/types" class="btn btn-secondary">🏷️ Types de tracking</a>
+          <a href="#/groups" class="btn btn-secondary">📁 Groupes</a>
+          <a href="#/tags" class="btn btn-secondary">🔖 Tags</a>
+        </div>
+      </section>
+
+      <section class="settings-section">
         <h2>Export des données</h2>
         <p>Télécharge toutes vos données au format JSON pour en faire une sauvegarde.</p>
         <button id="btn-export" class="btn btn-primary">⬇️ Exporter les données</button>

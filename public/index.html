@@ -18,46 +18,32 @@
 
   <div id="app">
 
-    <!-- Sidebar navigation -->
-    <nav id="sidebar" class="sidebar">
-      <div class="sidebar-header">
-        <span class="sidebar-logo">📍</span>
-        <span class="sidebar-title">My Tracker</span>
-        <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Fermer le menu">✕</button>
+    <header class="top-nav" aria-label="Navigation principale">
+      <a href="#/dashboard" class="nav-link" data-routes="dashboard">
+        <span class="nav-icon" aria-hidden="true">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a href="#/history" class="nav-link" data-routes="history">
+        <span class="nav-icon" aria-hidden="true">🕘</span>
+        <span class="nav-label">Historique</span>
+      </a>
+      <a href="#/stats" class="nav-link" data-routes="stats">
+        <span class="nav-icon" aria-hidden="true">📊</span>
+        <span class="nav-label">Statistique</span>
+      </a>
+      <a href="#/settings" class="nav-link" data-routes="settings|types|groups|tags">
+        <span class="nav-icon" aria-hidden="true">⚙️</span>
+        <span class="nav-label">Paramètre</span>
+      </a>
+    </header>
+
+    <main id="view-container" class="view-container">
+      <!-- Les vues sont injectées ici par le router -->
+      <div class="loading-screen">
+        <span class="loading-spinner"></span>
+        <p>Chargement…</p>
       </div>
-
-      <ul class="nav-list">
-        <li><a href="#/dashboard" class="nav-link" data-route="dashboard">🏠 Tableau de bord</a></li>
-        <li><a href="#/new-entry" class="nav-link" data-route="new-entry">➕ Nouvelle saisie</a></li>
-        <li><a href="#/history" class="nav-link" data-route="history">📋 Historique</a></li>
-        <li><a href="#/stats" class="nav-link" data-route="stats">📊 Statistiques</a></li>
-        <li class="nav-separator"></li>
-        <li><a href="#/types" class="nav-link" data-route="types">🏷️ Types de tracking</a></li>
-        <li><a href="#/groups" class="nav-link" data-route="groups">📁 Groupes</a></li>
-        <li><a href="#/tags" class="nav-link" data-route="tags">🔖 Tags</a></li>
-        <li class="nav-separator"></li>
-        <li><a href="#/settings" class="nav-link" data-route="settings">⚙️ Paramètres</a></li>
-      </ul>
-    </nav>
-
-    <!-- Overlay mobile -->
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-
-    <!-- Zone principale -->
-    <div class="main-wrapper">
-      <header class="topbar">
-        <button id="menu-btn" class="menu-btn" aria-label="Ouvrir le menu">☰</button>
-        <h1 id="page-title" class="page-title">Tableau de bord</h1>
-      </header>
-
-      <main id="view-container" class="view-container">
-        <!-- Les vues sont injectées ici par le router -->
-        <div class="loading-screen">
-          <span class="loading-spinner"></span>
-          <p>Chargement…</p>
-        </div>
-      </main>
-    </div>
+    </main>
 
   </div><!-- #app -->
 

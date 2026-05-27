@@ -221,3 +221,23 @@ npm run dev
 # Production
 npm run prod
 ```
+
+---
+
+## Story UI — Menu Sticky Haut
+
+### Objectif
+
+Remplacer la navigation latérale par un menu sticky en haut avec 4 icônes:
+
+- [x] Home
+- [x] Historique
+- [x] Statistique
+- [x] Paramètre
+
+### Détails d'implémentation
+
+- [x] L'icône de la page courante est mise en avant
+- [x] Les pages Types / Groupes / Tags sont rattachées au pôle Paramètre
+- [x] Suppression de l'entrée de navigation dédiée à "Nouvelle saisie"
+- [x] La création d'une nouvelle saisie reste accessible depuis la Home (saisie rapide)

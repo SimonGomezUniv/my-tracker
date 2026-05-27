@@ -41,39 +41,10 @@ router.register('entry', async (params) => {
   };
 });
 
-// --- Sidebar mobile ---
-
-function initSidebar() {
-  const menuBtn = document.getElementById('menu-btn');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
-  const toggleBtn = document.getElementById('sidebar-toggle');
-
-  function openSidebar() {
-    sidebar?.classList.add('open');
-    overlay?.classList.add('visible');
-  }
-
-  function closeSidebar() {
-    sidebar?.classList.remove('open');
-    overlay?.classList.remove('visible');
-  }
-
-  menuBtn?.addEventListener('click', openSidebar);
-  toggleBtn?.addEventListener('click', closeSidebar);
-  overlay?.addEventListener('click', closeSidebar);
-
-  // Fermer la sidebar sur navigation mobile
-  router.onChange(() => {
-    if (window.innerWidth < 768) closeSidebar();
-  });
-}
-
 // --- Init ---
 
 async function init() {
   await registerServiceWorker();
-  initSidebar();
   router.init();
 }
 
