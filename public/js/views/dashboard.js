@@ -3,6 +3,7 @@
  */
 
 import db from '../db.js';
+import { renderEntryCard } from './history.js';
 
 export default async function dashboardView() {
   const [types, entries, groups] = await Promise.all([
@@ -17,20 +18,12 @@ export default async function dashboardView() {
 
   const typeMap = Object.fromEntries(types.map(t => [t.id, t]));
 
-  const recentHtml = recentEntries.length
-    ? recentEntries.map(e => {
-        const type = typeMap[e.trackingTypeId];
-        const date = new Date(e.timestamp).toLocaleString('fr-FR');
-        return `
-          <div class="entry-card">
-            <span class="entry-icon">${type?.icon || '📍'}</span>
-            <div class="entry-info">
-              <strong>${type?.name || 'Inconnu'}</strong>
-              <small>${date}</small>
-            </div>
-          </div>`;
-      }).join('')
-    : '<p class="empty-state">Aucune saisie pour l\'instant.</p>';
+  const renderedRecentCards = recentEntries
+    .map(e => renderEntryCard(e, typeMap[e.trackingTypeId], false))
+    .filter(Boolean)
+    .join('');
+
+  const recentHtml = renderedRecentCards || '<p class="empty-state">Aucune saisie pour l\'instant.</p>';
 
   const quickLinks = types.slice(0, 6).map(t => `
     <a href="#/new-entry/${t.id}" class="quick-card" style="--color: ${t.color || '#6366f1'}">
@@ -75,8 +68,9 @@ export default async function dashboardView() {
         </div>
       </section>`}
 
-      <section class="dashboard-section">
+      <section class="dashboard-section dashboard-section--recent">
         <h2>Dernières saisies</h2>
+        <p class="dashboard-section-note">Affichage direct des valeurs suivies (durée, note, texte, booléen).</p>
         <div class="recent-list">${recentHtml}</div>
         ${entries.length > 5 ? `<a href="#/history" class="btn btn-ghost">Voir tout l'historique</a>` : ''}
       </section>
