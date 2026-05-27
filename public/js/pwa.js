@@ -9,10 +9,20 @@ export async function registerServiceWorker() {
     return;
   }
 
-  const env = window.__ENV__?.NODE_ENV || 'dev';
+  const env = (window.__ENV__?.NODE_ENV || 'dev').trim();
   const swFile = env === 'prod' ? './sw.js' : './sw-dev.js';
 
   try {
+    if (env !== 'prod') {
+      // En dev, éviter les incohérences dues à d'anciens SW/caches de prod.
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(reg => reg.unregister()));
+      if ('caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map(key => caches.delete(key)));
+      }
+    }
+
     const registration = await navigator.serviceWorker.register(swFile);
     console.log(`[pwa] Service Worker enregistré (${env}) :`, registration.scope);
 
