@@ -94,6 +94,60 @@
   cursor: pointer;
 }
 
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-switch input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-switch__track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 46px;
+  height: 28px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--color-border);
+  transition: background var(--transition);
+  flex: 0 0 auto;
+}
+
+.toggle-switch__thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(0);
+  transition: transform var(--transition), background var(--transition);
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-switch__track {
+  background: var(--color-primary);
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-switch__track .toggle-switch__thumb {
+  transform: translateX(18px);
+}
+
+.toggle-switch__label {
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.toggle-switch:hover .toggle-switch__track {
+  filter: brightness(0.98);
+}
+
 /* ============================================================
    Cards
    ============================================================ */

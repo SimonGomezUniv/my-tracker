@@ -76,6 +76,15 @@ export default async function statsView() {
           <label class="form-label" style="margin-bottom:6px;display:block">Filter by tags</label>
           <div class="chips-selector" id="stats-tag-chips">${tagChips}</div>
         </div>` : ''}
+        <div style="margin-top:12px">
+          <label class="toggle-switch" for="stats-include-notes">
+            <input type="checkbox" id="stats-include-notes" />
+            <span class="toggle-switch__track" aria-hidden="true">
+              <span class="toggle-switch__thumb"></span>
+            </span>
+            <span class="toggle-switch__label">Include comments in the word cloud</span>
+          </label>
+        </div>
       </section>
 
       <div id="stats-results">
@@ -88,7 +97,7 @@ export default async function statsView() {
 
 // ---- Rendu des résultats ----
 
-async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) {
+async function renderStatsResults(typeId, start, end, filterTagIds = new Set(), includeNotes = false) {
   const container = document.getElementById('stats-results');
   if (!container) return;
 
@@ -168,7 +177,7 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) 
   const calendarHtml = renderStatsCalendar(entries, type, end);
 
   // Nuage de mots (notes + champs string)
-  const wordCloudHtml = renderWordCloud(buildWordFrequency(entries, type));
+  const wordCloudHtml = renderWordCloud(buildWordFrequency(entries, type, { includeNotes }));
 
   // Liste des saisies
   const sorted = [...entries].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -312,11 +321,12 @@ function tokenize(text) {
     .filter(w => w.length >= 3 && !STOPWORDS.has(w));
 }
 
-function buildWordFrequency(entries, type) {
+function buildWordFrequency(entries, type, options = {}) {
   const freq = {};
   const stringFields = (type.fields || []).filter(f => f.type === 'string');
+  const includeNotes = !!options.includeNotes;
   entries.forEach(e => {
-    if (e.note?.trim()) tokenize(e.note).forEach(w => { freq[w] = (freq[w] || 0) + 1; });
+    if (includeNotes && e.note?.trim()) tokenize(e.note).forEach(w => { freq[w] = (freq[w] || 0) + 1; });
     stringFields.forEach(f => {
       const val = e.data?.[f.name];
       if (val?.trim()) tokenize(val).forEach(w => { freq[w] = (freq[w] || 0) + 1; });
@@ -390,7 +400,10 @@ function bindStatsEvents() {
 
   const refresh = () => {
     const f = getFilters();
-    if (f) renderStatsResults(f.typeId, f.start, f.end, f.filterTagIds);
+    if (f) {
+      const includeNotes = document.getElementById('stats-include-notes')?.checked || false;
+      renderStatsResults(f.typeId, f.start, f.end, f.filterTagIds, includeNotes);
+    }
   };
 
   document.getElementById('stats-type')?.addEventListener('change', refresh);
@@ -400,6 +413,7 @@ function bindStatsEvents() {
   });
   document.getElementById('stats-start')?.addEventListener('change', refresh);
   document.getElementById('stats-end')?.addEventListener('change', refresh);
+  document.getElementById('stats-include-notes')?.addEventListener('change', refresh);
 
   document.querySelectorAll('#stats-tag-chips .chip').forEach(chip => {
     chip.addEventListener('click', () => {
