@@ -86,18 +86,32 @@ function renderEntryForm(type, existingEntry, allTags) {
   const defaultTs = existingEntry ? toLocalISO(new Date(existingEntry.timestamp)) : toLocalISO(new Date());
 
   const fieldsHtml = (type.fields || []).map(f => renderFormField(f, existingEntry?.data?.[f.name])).join('');
+  const tagsButtonLabel = `Tags${selectedTagIds.size > 0 ? ` (${selectedTagIds.size})` : ''}`;
 
-  const tagsSection = allTags.length > 0 ? `
-    <section class="editor-section">
-      <h2 class="editor-section-title">Tags</h2>
-      <div class="chips-selector" id="entry-tags-chips">
-        ${allTags.map(t => `
-          <span class="chip ${selectedTagIds.has(t.id) ? 'chip--selected' : ''}"
-                data-id="${escapeHtml(t.id)}" style="--chip-bg: ${escapeHtml(t.color)}">
-            ${escapeHtml(t.name)}
-          </span>`).join('')}
+  const tagsPopover = allTags.length > 0 ? `
+    <div id="entry-tags-popover" class="entry-tags-popover hidden" aria-hidden="true">
+      <div class="entry-tags-popover__panel">
+        <div class="entry-tags-popover__header">
+          <div>
+            <h3>Select tags</h3>
+            <p class="text-muted">Choose one or more tags for this entry.</p>
+          </div>
+          <button type="button" id="entry-tags-close" class="btn btn-ghost btn-icon" aria-label="Close tags panel">✕</button>
+        </div>
+        <div class="chips-selector entry-tags-popover__chips" id="entry-tags-chips">
+          ${allTags.map(t => `
+            <button type="button" class="chip ${selectedTagIds.has(t.id) ? 'chip--selected' : ''}"
+                  data-id="${escapeHtml(t.id)}" style="--chip-bg: ${escapeHtml(t.color)}">
+              ${escapeHtml(t.name)}
+            </button>`).join('')}
+        </div>
+        <div class="entry-tags-popover__actions">
+          <button type="button" id="entry-tags-clear" class="btn btn-ghost">Clear</button>
+          <div class="entry-tags-popover__spacer"></div>
+          <button type="button" id="entry-tags-done" class="btn btn-primary">Done</button>
+        </div>
       </div>
-    </section>` : '';
+    </div>` : '';
 
   const backUrl = existingEntry ? '#/history' : '#/new-entry';
 
@@ -114,10 +128,10 @@ function renderEntryForm(type, existingEntry, allTags) {
 
       <form id="entry-form" novalidate>
         <section class="editor-section">
-          <h2 class="editor-section-title">Date & time</h2>
-          <div class="form-group">
-            <label class="form-label" for="entry-timestamp">Entry date and time</label>
+          <div class="entry-compact-header">
+            <label class="form-label entry-compact-header__label" for="entry-timestamp">Date</label>
             <input type="datetime-local" id="entry-timestamp" class="form-input" value="${defaultTs}" required />
+            ${allTags.length > 0 ? `<button type="button" id="entry-tags-open" class="btn btn-secondary entry-tags-button">${tagsButtonLabel}</button>` : ''}
           </div>
         </section>
 
@@ -127,16 +141,16 @@ function renderEntryForm(type, existingEntry, allTags) {
           ${fieldsHtml}
         </section>` : ''}
 
-        ${tagsSection}
+        <details class="entry-note-details" ${existingEntry?.note ? 'open' : ''}>
+          <summary class="editor-section-title entry-note-details__summary">Note</summary>
+          <section class="editor-section entry-note-details__content">
+            <div class="form-group">
+              <textarea id="entry-note" class="form-textarea" placeholder="Optional note..." rows="2">${escapeHtml(existingEntry?.note || '')}</textarea>
+            </div>
+          </section>
+        </details>
 
-        <section class="editor-section">
-          <h2 class="editor-section-title">Note</h2>
-          <div class="form-group">
-            <textarea id="entry-note" class="form-textarea" placeholder="Optional note..." rows="2">${escapeHtml(existingEntry?.note || '')}</textarea>
-          </div>
-        </section>
-
-        <div class="form-actions form-actions--main">
+        <div class="form-actions form-actions--main entry-form-actions">
           <button type="submit" class="btn btn-primary">
             💾 ${existingEntry ? 'Update entry' : 'Save entry'}
           </button>
@@ -146,7 +160,7 @@ function renderEntryForm(type, existingEntry, allTags) {
     </div>`;
 
   return {
-    html,
+    html: html + tagsPopover,
     title: existingEntry ? `Edit: ${type.name}` : `Entry: ${type.name}`,
     bind: () => bindEntryFormEvents(type, existingEntry, selectedTagIds),
   };
@@ -161,33 +175,34 @@ function renderFormField(field, value = null) {
 
   switch (field.type) {
     case 'string':
-      return `<div class="form-group">
-        <label class="form-label">${l} ${req}</label>
-        <input type="text" name="${n}" class="form-input entry-field"
+      return `<div class="form-group entry-field-row">
+        <label class="form-label entry-field-row__label">${l} ${req}</label>
+        <input type="text" name="${n}" class="form-input entry-field entry-field-row__input"
           value="${escapeHtml(value ?? '')}" ${field.required ? 'required' : ''} />
       </div>`;
 
     case 'numeric':
-      return `<div class="form-group">
-        <label class="form-label">${l} ${req}</label>
-        <input type="number" name="${n}" class="form-input entry-field"
+      return `<div class="form-group entry-field-row">
+        <label class="form-label entry-field-row__label">${l} ${req}</label>
+        <input type="number" name="${n}" class="form-input entry-field entry-field-row__input"
           value="${value !== null && value !== undefined ? escapeHtml(String(value)) : ''}"
           step="any" ${field.required ? 'required' : ''} />
       </div>`;
 
     case 'boolean':
-      return `<div class="form-group">
-        <label class="checkbox-label">
+      return `<div class="form-group entry-field-row entry-field-row--checkbox">
+        <span class="form-label entry-field-row__label">${l} ${req}</span>
+        <label class="checkbox-label entry-field-row__input">
           <input type="checkbox" name="${n}" class="entry-field" ${value ? 'checked' : ''} />
-          ${l} ${req}
+          Enabled
         </label>
       </div>`;
 
     case 'rating': {
       const rv = parseInt(value) || 0;
-      return `<div class="form-group">
-        <label class="form-label">${l} ${req}</label>
-        <div class="rating-input" data-field="${n}">
+      return `<div class="form-group entry-field-row entry-field-row--rating">
+        <label class="form-label entry-field-row__label">${l} ${req}</label>
+        <div class="rating-input entry-field-row__input" data-field="${n}">
           ${[1, 2, 3, 4, 5].map(i => `
             <button type="button" class="star-btn ${rv >= i ? 'star-active' : ''}" data-value="${i}">★</button>
           `).join('')}
@@ -197,18 +212,17 @@ function renderFormField(field, value = null) {
     }
 
     case 'duration':
-      return `<div class="form-group">
-        <label class="form-label">${l} ${req}</label>
-        <input type="text" name="${n}" class="form-input entry-field"
-          value="${escapeHtml(value ?? '')}" placeholder="ex : 2:30"
+      return `<div class="form-group entry-field-row">
+        <label class="form-label entry-field-row__label">${l} ${req}</label>
+        <input type="text" name="${n}" class="form-input entry-field entry-field-row__input"
+          value="${escapeHtml(value ?? '')}" placeholder="2:30"
           ${field.required ? 'required' : ''} />
-        <span class="form-hint">Format HH:MM — e.g. 1:45 for 1h45</span>
       </div>`;
 
     default:
-      return `<div class="form-group">
-        <label class="form-label">${l} ${req}</label>
-        <input type="text" name="${n}" class="form-input entry-field"
+      return `<div class="form-group entry-field-row">
+        <label class="form-label entry-field-row__label">${l} ${req}</label>
+        <input type="text" name="${n}" class="form-input entry-field entry-field-row__input"
           value="${escapeHtml(value ?? '')}" ${field.required ? 'required' : ''} />
       </div>`;
   }
@@ -217,6 +231,46 @@ function renderFormField(field, value = null) {
 // ---- Binding du formulaire ----
 
 function bindEntryFormEvents(type, existingEntry, selectedTagIds) {
+  const openTagsButton = document.getElementById('entry-tags-open');
+  const closeTagsButton = document.getElementById('entry-tags-close');
+  const clearTagsButton = document.getElementById('entry-tags-clear');
+  const doneTagsButton = document.getElementById('entry-tags-done');
+  const tagsPopover = document.getElementById('entry-tags-popover');
+
+  const openTagsPopover = () => {
+    if (!tagsPopover) return;
+    tagsPopover.classList.remove('hidden');
+    tagsPopover.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeTagsPopover = () => {
+    if (!tagsPopover) return;
+    tagsPopover.classList.add('hidden');
+    tagsPopover.setAttribute('aria-hidden', 'true');
+  };
+
+  openTagsButton?.addEventListener('click', () => {
+    openTagsPopover();
+  });
+
+  closeTagsButton?.addEventListener('click', closeTagsPopover);
+
+  clearTagsButton?.addEventListener('click', () => {
+    selectedTagIds.clear();
+    document.querySelectorAll('#entry-tags-chips .chip').forEach(chip => chip.classList.remove('chip--selected'));
+    if (openTagsButton) {
+      openTagsButton.textContent = 'Tags';
+    }
+  });
+
+  doneTagsButton?.addEventListener('click', closeTagsPopover);
+
+  document.addEventListener('click', (event) => {
+    if (!tagsPopover || tagsPopover.classList.contains('hidden')) return;
+    if (tagsPopover.contains(event.target) || openTagsButton?.contains(event.target)) return;
+    closeTagsPopover();
+  });
+
   // Étoiles de notation
   document.querySelectorAll('.rating-input').forEach(ratingInput => {
     const stars = ratingInput.querySelectorAll('.star-btn');
@@ -232,14 +286,27 @@ function bindEntryFormEvents(type, existingEntry, selectedTagIds) {
     });
   });
 
-  // Tag chips
+  // Tag chips in dialog
   document.querySelectorAll('#entry-tags-chips .chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const id = chip.dataset.id;
-      if (selectedTagIds.has(id)) { selectedTagIds.delete(id); chip.classList.remove('chip--selected'); }
-      else { selectedTagIds.add(id); chip.classList.add('chip--selected'); }
+      if (selectedTagIds.has(id)) {
+        selectedTagIds.delete(id);
+        chip.classList.remove('chip--selected');
+      } else {
+        selectedTagIds.add(id);
+        chip.classList.add('chip--selected');
+      }
+
+      if (openTagsButton) {
+        openTagsButton.textContent = `Tags${selectedTagIds.size > 0 ? ` (${selectedTagIds.size})` : ''}`;
+      }
     });
   });
+
+  updateStickyActions();
+
+  window.addEventListener('resize', updateStickyActions);
 
   // Soumission
   document.getElementById('entry-form')?.addEventListener('submit', async (e) => {
@@ -283,4 +350,10 @@ function bindEntryFormEvents(type, existingEntry, selectedTagIds) {
       showToast(`Error: ${err.message}`, 'error');
     }
   });
+}
+
+function updateStickyActions() {
+  const actions = document.querySelector('.entry-form-actions');
+  if (!actions) return;
+  actions.classList.toggle('entry-form-actions--sticky', window.matchMedia('(max-width: 640px)').matches);
 }
