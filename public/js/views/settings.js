@@ -41,10 +41,10 @@ export default async function settingsView() {
   ).join('');
 
   const widgetLabels = {
-    'word-cloud': 'Nuage de mots',
-    'duration-total': 'Durée totale',
-    'entries-chart': 'Graphe du nombre',
-    'calendar': 'Calendrier',
+    'word-cloud': 'Word cloud',
+    'duration-total': 'Total duration',
+    'entries-chart': 'Entry chart',
+    'calendar': 'Calendar',
   };
 
   const widgetsHtml = homeConfig.widgets.length > 0
@@ -59,25 +59,25 @@ export default async function settingsView() {
           })
           .filter(Boolean)
           .join(', ');
-        const period = PERIOD_PRESETS.find(p => p.value === w.period)?.label || '30 derniers jours';
+        const period = PERIOD_PRESETS.find(p => p.value === w.period)?.label || 'Last 30 days';
         const tagsLabel = w.tagIds?.length
           ? w.tagIds.map(id => tagMap[id]?.name).filter(Boolean).join(', ')
-          : 'Tous les tags';
+          : 'All tags';
         return `
           <div class="home-widget-config-item">
             <div>
               <strong>${escapeHtml(widgetLabels[w.kind] || 'Widget')}</strong>
-              <p class="text-muted">${escapeHtml(typeLabel || 'Type supprimé')} · ${escapeHtml(period)} · ${escapeHtml(tagsLabel)}</p>
+              <p class="text-muted">${escapeHtml(typeLabel || 'Deleted type')} · ${escapeHtml(period)} · ${escapeHtml(tagsLabel)}</p>
             </div>
-            <button class="btn btn-sm btn-danger btn-remove-home-widget" data-id="${escapeHtml(w.id)}">Supprimer</button>
+            <button class="btn btn-sm btn-danger btn-remove-home-widget" data-id="${escapeHtml(w.id)}">Remove</button>
           </div>`;
       }).join('')
-    : '<p class="text-muted">Aucun widget configuré.</p>';
+    : '<p class="text-muted">No widgets configured.</p>';
 
   const sectionLabels = {
-    quick: 'Saisie rapide',
-    widgets: 'Stats personnalisées',
-    history: 'Historique Home',
+    quick: 'Quick entry',
+    widgets: 'Custom stats',
+    history: 'Home history',
   };
 
   const sectionOrderHtml = homeConfig.sectionOrder.map((section, index) => `
@@ -93,14 +93,14 @@ export default async function settingsView() {
     <div class="view-settings">
 
       <section class="settings-section">
-        <h2>Organisation du tracking</h2>
-        <p>Gérez ici la structure de votre suivi: types, groupes et tags.</p>
+        <h2>Tracking structure</h2>
+        <p>Manage your tracking setup here: types, groups, and tags.</p>
         <div class="import-zone">
-          <a href="#/types" class="btn btn-secondary settings-mobile-icon-btn" title="Types de tracking">
-            <span class="btn-glyph" aria-hidden="true">🏷️</span><span class="btn-text">Types de tracking</span>
+          <a href="#/types" class="btn btn-secondary settings-mobile-icon-btn" title="Tracking types">
+            <span class="btn-glyph" aria-hidden="true">🏷️</span><span class="btn-text">Tracking types</span>
           </a>
-          <a href="#/groups" class="btn btn-secondary settings-mobile-icon-btn" title="Groupes">
-            <span class="btn-glyph" aria-hidden="true">📁</span><span class="btn-text">Groupes</span>
+          <a href="#/groups" class="btn btn-secondary settings-mobile-icon-btn" title="Groups">
+            <span class="btn-glyph" aria-hidden="true">📁</span><span class="btn-text">Groups</span>
           </a>
           <a href="#/tags" class="btn btn-secondary settings-mobile-icon-btn" title="Tags">
             <span class="btn-glyph" aria-hidden="true">🔖</span><span class="btn-text">Tags</span>
@@ -109,131 +109,131 @@ export default async function settingsView() {
       </section>
 
       <section class="settings-section">
-        <h2>Personnalisation de l'accueil</h2>
-        <p>Choisissez les compteurs visibles et ajoutez des widgets de statistiques sur la Home.</p>
+        <h2>Home customization</h2>
+        <p>Choose visible counters and add stats widgets to Home.</p>
 
         <div class="settings-subsection">
-          <h3>Thème</h3>
+          <h3>Theme</h3>
           <div class="form-group" style="max-width:280px">
-            <label class="form-label" for="theme-mode">Mode d'affichage</label>
+            <label class="form-label" for="theme-mode">Display mode</label>
             <select id="theme-mode" class="form-select">
-              <option value="auto" ${currentTheme === 'auto' ? 'selected' : ''}>Auto (suivre le téléphone)</option>
-              <option value="light" ${currentTheme === 'light' ? 'selected' : ''}>Clair</option>
-              <option value="dark" ${currentTheme === 'dark' ? 'selected' : ''}>Obscur</option>
+              <option value="auto" ${currentTheme === 'auto' ? 'selected' : ''}>Auto (follow device)</option>
+              <option value="light" ${currentTheme === 'light' ? 'selected' : ''}>Light</option>
+              <option value="dark" ${currentTheme === 'dark' ? 'selected' : ''}>Dark</option>
             </select>
           </div>
         </div>
 
         <div class="settings-subsection">
-          <h3>Compteurs visibles</h3>
+          <h3>Visible counters</h3>
           <div class="settings-toggle-grid">
-            <label class="checkbox-label"><input type="checkbox" id="home-show-entries" ${homeConfig.showCounts.entries ? 'checked' : ''} /> Nombre de saisies</label>
-            <label class="checkbox-label"><input type="checkbox" id="home-show-types" ${homeConfig.showCounts.types ? 'checked' : ''} /> Nombre de trackings</label>
-            <label class="checkbox-label"><input type="checkbox" id="home-show-groups" ${homeConfig.showCounts.groups ? 'checked' : ''} /> Nombre de groupes</label>
+            <label class="checkbox-label"><input type="checkbox" id="home-show-entries" ${homeConfig.showCounts.entries ? 'checked' : ''} /> Number of entries</label>
+            <label class="checkbox-label"><input type="checkbox" id="home-show-types" ${homeConfig.showCounts.types ? 'checked' : ''} /> Number of tracking types</label>
+            <label class="checkbox-label"><input type="checkbox" id="home-show-groups" ${homeConfig.showCounts.groups ? 'checked' : ''} /> Number of groups</label>
           </div>
         </div>
 
         <div class="settings-subsection">
-          <h3>Ajouter un widget stats</h3>
+          <h3>Add a stats widget</h3>
           <div class="form-row">
             <div class="form-group" style="flex:1">
-              <label class="form-label" for="home-widget-kind">Type de widget</label>
+              <label class="form-label" for="home-widget-kind">Widget type</label>
               <select id="home-widget-kind" class="form-select">
-                <option value="word-cloud">Nuage de mots</option>
-                <option value="duration-total">Durée totale</option>
-                <option value="entries-chart">Graphe du nombre</option>
-                <option value="calendar">Calendrier</option>
+                <option value="word-cloud">Word cloud</option>
+                <option value="duration-total">Total duration</option>
+                <option value="entries-chart">Entry chart</option>
+                <option value="calendar">Calendar</option>
               </select>
             </div>
             <div class="form-group" style="flex:1">
-              <label class="form-label" for="home-widget-type">Type de tracking</label>
+              <label class="form-label" for="home-widget-type">Tracking type</label>
               <select id="home-widget-type" class="form-select">
-                <option value="">— Choisir —</option>
+                <option value="">— Select —</option>
                 ${typeOptions}
               </select>
             </div>
             <div class="form-group hidden" style="flex:1" id="home-widget-types-multi-group">
-              <label class="form-label" for="home-widget-types-multi">Types de tracking (calendrier)</label>
+              <label class="form-label" for="home-widget-types-multi">Tracking types (calendar)</label>
               <select id="home-widget-types-multi" class="form-select" multiple size="4">${typeOptions}</select>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group" style="flex:1">
-              <label class="form-label" for="home-widget-period">Temps relatif</label>
+              <label class="form-label" for="home-widget-period">Relative time</label>
               <select id="home-widget-period" class="form-select">${periodOptions}</select>
             </div>
             <div class="form-group" style="flex:1">
-              <label class="form-label" for="home-widget-tags">Tags de filtrage</label>
+              <label class="form-label" for="home-widget-tags">Tag filters</label>
               <select id="home-widget-tags" class="form-select" multiple size="4">${tagOptions}</select>
             </div>
           </div>
 
-          <button id="btn-add-home-widget" class="btn btn-secondary settings-mobile-icon-btn" title="Ajouter le widget" ${types.length === 0 ? 'disabled' : ''}>
-            <span class="btn-glyph" aria-hidden="true">➕</span><span class="btn-text">Ajouter le widget</span>
+          <button id="btn-add-home-widget" class="btn btn-secondary settings-mobile-icon-btn" title="Add widget" ${types.length === 0 ? 'disabled' : ''}>
+            <span class="btn-glyph" aria-hidden="true">➕</span><span class="btn-text">Add widget</span>
           </button>
         </div>
 
         <div class="settings-subsection">
-          <h3>Ordre des blocs Home</h3>
+          <h3>Home block order</h3>
           <div class="home-order-list">${sectionOrderHtml}</div>
         </div>
 
         <div class="settings-subsection">
-          <h3>Widgets actifs</h3>
+          <h3>Active widgets</h3>
           <div id="home-widgets-config-list" class="home-widget-config-list">${widgetsHtml}</div>
         </div>
       </section>
 
       <section class="settings-section">
-        <h2>Export des données</h2>
-        <p>Télécharge toutes vos données au format JSON pour en faire une sauvegarde.</p>
-        <button id="btn-export" class="btn btn-primary settings-mobile-icon-btn" title="Exporter les données">
-          <span class="btn-glyph" aria-hidden="true">⬇️</span><span class="btn-text">Exporter les données</span>
+        <h2>Export data</h2>
+        <p>Download all your data as JSON for backup.</p>
+        <button id="btn-export" class="btn btn-primary settings-mobile-icon-btn" title="Export data">
+          <span class="btn-glyph" aria-hidden="true">⬇️</span><span class="btn-text">Export data</span>
         </button>
       </section>
 
       <section class="settings-section">
-        <h2>Import des données</h2>
-        <p>Restaure vos données depuis un fichier JSON exporté précédemment.</p>
+        <h2>Import data</h2>
+        <p>Restore your data from a previously exported JSON file.</p>
         <div class="import-zone">
-          <label for="import-file" class="btn btn-secondary settings-mobile-icon-btn" title="Choisir un fichier JSON">
-            <span class="btn-glyph" aria-hidden="true">📂</span><span class="btn-text">Choisir un fichier JSON</span>
+          <label for="import-file" class="btn btn-secondary settings-mobile-icon-btn" title="Choose JSON file">
+            <span class="btn-glyph" aria-hidden="true">📂</span><span class="btn-text">Choose JSON file</span>
           </label>
           <input type="file" id="import-file" accept=".json" style="display:none" />
-          <span id="import-filename" class="import-filename">Aucun fichier sélectionné</span>
+          <span id="import-filename" class="import-filename">No file selected</span>
         </div>
         <div class="import-options">
           <label class="checkbox-label">
             <input type="checkbox" id="import-replace" checked />
-            Remplacer toutes les données existantes
+            Replace all existing data
           </label>
         </div>
-        <button id="btn-import" class="btn btn-secondary settings-mobile-icon-btn" title="Importer" disabled>
-          <span class="btn-glyph" aria-hidden="true">⬆️</span><span class="btn-text">Importer</span>
+        <button id="btn-import" class="btn btn-secondary settings-mobile-icon-btn" title="Import" disabled>
+          <span class="btn-glyph" aria-hidden="true">⬆️</span><span class="btn-text">Import</span>
         </button>
       </section>
 
       <section class="settings-section settings-section--danger">
-        <h2>Réinitialisation</h2>
-        <p>Supprime <strong>toutes</strong> les données (types, groupes, saisies, tags). Cette action est irréversible.</p>
-        <button id="btn-reset" class="btn btn-danger settings-mobile-icon-btn" title="Tout supprimer">
-          <span class="btn-glyph" aria-hidden="true">🗑️</span><span class="btn-text">Tout supprimer</span>
+        <h2>Reset</h2>
+        <p>Delete <strong>all</strong> data (types, groups, entries, tags). This action is irreversible.</p>
+        <button id="btn-reset" class="btn btn-danger settings-mobile-icon-btn" title="Delete everything">
+          <span class="btn-glyph" aria-hidden="true">🗑️</span><span class="btn-text">Delete everything</span>
         </button>
       </section>
 
       <section class="settings-section settings-section--info">
-        <h2>Informations</h2>
+        <h2>Information</h2>
         <ul class="info-list">
-          <li><strong>Version :</strong> 1.0.0</li>
-          <li><strong>Mode :</strong> <code>${env}</code></li>
-          <li><strong>Stockage :</strong> IndexedDB (navigateur)</li>
+          <li><strong>Version:</strong> 1.0.0</li>
+          <li><strong>Mode:</strong> <code>${env}</code></li>
+          <li><strong>Storage:</strong> IndexedDB (browser)</li>
         </ul>
       </section>
 
     </div>`;
 
-  return { html, title: 'Paramètres', bind: bindSettingsEvents };
+  return { html, title: 'Settings', bind: bindSettingsEvents };
 }
 
 function bindSettingsEvents() {
@@ -245,7 +245,7 @@ function bindSettingsEvents() {
   const themeMode = document.getElementById('theme-mode');
   themeMode?.addEventListener('change', () => {
     const mode = setThemePreference(themeMode.value || 'auto');
-    showToast(`Thème appliqué : ${mode === 'auto' ? 'auto' : mode === 'light' ? 'clair' : 'obscur'}.`, 'success', 1200);
+    showToast(`Theme applied: ${mode}.`, 'success', 1200);
   });
 
   const showEntries = document.getElementById('home-show-entries');
@@ -258,7 +258,7 @@ function bindSettingsEvents() {
       types: !!showTypes?.checked,
       groups: !!showGroups?.checked,
     });
-    showToast('Préférences de la Home mises à jour.', 'success', 1400);
+    showToast('Home preferences updated.', 'success', 1400);
   };
 
   showEntries?.addEventListener('change', syncCounts);
@@ -288,23 +288,23 @@ function bindSettingsEvents() {
     const tagIds = [...(tagSelect?.selectedOptions || [])].map(o => o.value);
 
     if (trackingTypeIds.length === 0) {
-      showToast('Choisissez au moins un type de tracking.', 'warning');
+      showToast('Select at least one tracking type.', 'warning');
       return;
     }
 
     try {
       addHomeWidget({ kind, trackingTypeIds, period, tagIds });
-      showToast('Widget ajouté à la Home.', 'success');
+      showToast('Widget added to Home.', 'success');
       refreshRoute();
     } catch (err) {
-      showToast(err.message || 'Impossible d\'ajouter le widget.', 'error');
+      showToast(err.message || 'Unable to add widget.', 'error');
     }
   });
 
   document.querySelectorAll('.btn-remove-home-widget').forEach(btn => {
     btn.addEventListener('click', () => {
       removeHomeWidget(btn.dataset.id);
-      showToast('Widget supprimé.', 'success', 1200);
+      showToast('Widget removed.', 'success', 1200);
       refreshRoute();
     });
   });
@@ -343,7 +343,7 @@ function bindSettingsEvents() {
 
   importFile?.addEventListener('change', (e) => {
     selectedFile = e.target.files[0];
-    importFilename.textContent = selectedFile ? selectedFile.name : 'Aucun fichier sélectionné';
+    importFilename.textContent = selectedFile ? selectedFile.name : 'No file selected';
     importBtn.disabled = !selectedFile;
   });
 
@@ -355,7 +355,7 @@ function bindSettingsEvents() {
   });
 
   resetBtn?.addEventListener('click', async () => {
-    if (!confirm('Supprimer TOUTES les données ? Cette action est irréversible.')) return;
+    if (!confirm('Delete ALL data? This action is irreversible.')) return;
     const { resetData } = await import('../services/export.service.js');
     await resetData();
   });

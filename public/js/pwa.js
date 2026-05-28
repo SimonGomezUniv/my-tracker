@@ -5,7 +5,7 @@
 
 export async function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) {
-    console.warn('[pwa] Service Workers non supportés dans ce navigateur.');
+    console.warn('[pwa] Service Workers are not supported in this browser.');
     return;
   }
 
@@ -24,7 +24,7 @@ export async function registerServiceWorker() {
     }
 
     const registration = await navigator.serviceWorker.register(swFile);
-    console.log(`[pwa] Service Worker enregistré (${env}) :`, registration.scope);
+    console.log(`[pwa] Service Worker registered (${env}):`, registration.scope);
 
     // En prod, écouter les mises à jour disponibles
     if (env === 'prod') {
@@ -38,7 +38,7 @@ export async function registerServiceWorker() {
       });
     }
   } catch (err) {
-    console.error('[pwa] Échec enregistrement Service Worker :', err);
+    console.error('[pwa] Service Worker registration failed:', err);
   }
 }
 
@@ -46,8 +46,8 @@ function showUpdateNotification() {
   const banner = document.createElement('div');
   banner.className = 'update-banner';
   banner.innerHTML = `
-    <span>Une nouvelle version est disponible.</span>
-    <button onclick="window.location.reload()">Mettre à jour</button>
+    <span>A new version is available.</span>
+    <button onclick="window.location.reload()">Update</button>
   `;
   document.body.appendChild(banner);
 }

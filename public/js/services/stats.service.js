@@ -3,12 +3,12 @@
  */
 
 export const PERIOD_PRESETS = [
-  { value: '7d',         label: '7 derniers jours' },
-  { value: 'this-month', label: 'Ce mois-ci' },
-  { value: 'last-month', label: 'Mois passé' },
-  { value: '30d',        label: '30 derniers jours' },
-  { value: '3m',         label: '3 derniers mois' },
-  { value: '1y',         label: 'Depuis 1 an' },
+  { value: '7d',         label: 'Last 7 days' },
+  { value: 'this-month', label: 'This month' },
+  { value: 'last-month', label: 'Last month' },
+  { value: '30d',        label: 'Last 30 days' },
+  { value: '3m',         label: 'Last 3 months' },
+  { value: '1y',         label: 'Last 1 year' },
 ];
 
 /**
@@ -87,7 +87,7 @@ export function formatPeriodLabel(key, granularity) {
   }
   // month
   const [y, m] = key.split('-');
-  const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   return `${months[parseInt(m) - 1]} ${y.slice(2)}`;
 }
 

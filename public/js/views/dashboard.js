@@ -35,28 +35,28 @@ export default async function dashboardView() {
     .filter(Boolean)
     .join('');
 
-  const recentHtml = renderedRecentCards || '<p class="empty-state">Aucune saisie pour l\'instant.</p>';
+  const recentHtml = renderedRecentCards || '<p class="empty-state">No entries yet.</p>';
 
   const countCards = [];
   if (homeConfig.showCounts.entries) {
     countCards.push(`
       <div class="stat-card">
         <span class="stat-value">${entries.length}</span>
-        <span class="stat-label">Saisies totales</span>
+        <span class="stat-label">Total entries</span>
       </div>`);
   }
   if (homeConfig.showCounts.types) {
     countCards.push(`
       <div class="stat-card">
         <span class="stat-value">${types.length}</span>
-        <span class="stat-label">Types de tracking</span>
+        <span class="stat-label">Tracking types</span>
       </div>`);
   }
   if (homeConfig.showCounts.groups) {
     countCards.push(`
       <div class="stat-card">
         <span class="stat-value">${groups.length}</span>
-        <span class="stat-label">Groupes</span>
+        <span class="stat-label">Groups</span>
       </div>`);
   }
 
@@ -77,7 +77,7 @@ export default async function dashboardView() {
 
     </div>`;
 
-  return { html, title: 'Tableau de bord', bind: bindDashboardWidgets };
+  return { html, title: 'Dashboard', bind: bindDashboardWidgets };
 }
 
 function renderHomeWidgets(widgets, context) {
@@ -96,8 +96,8 @@ function renderHomeWidgets(widgets, context) {
     if (!primaryType) {
       return `
         <article class="home-widget-card">
-          <header class="home-widget-header"><h3>Widget invalide</h3></header>
-          <p class="empty-state">Le type lié a été supprimé.</p>
+          <header class="home-widget-header"><h3>Invalid widget</h3></header>
+          <p class="empty-state">The linked type was deleted.</p>
         </article>`;
     }
 
@@ -112,12 +112,12 @@ function renderHomeWidgets(widgets, context) {
       return true;
     });
 
-    const periodLabel = PERIOD_PRESETS.find(p => p.value === widget.period)?.label || '30 derniers jours';
+    const periodLabel = PERIOD_PRESETS.find(p => p.value === widget.period)?.label || 'Last 30 days';
     const tagLabel = widget.tagIds?.length
       ? widget.tagIds.map(id => tagMap[id]?.name).filter(Boolean).join(', ')
-      : 'Tous les tags';
+      : 'All tags';
 
-    let bodyHtml = '<p class="empty-state">Aucune donnée pour ce widget sur la période.</p>';
+    let bodyHtml = '<p class="empty-state">No data for this widget in the selected period.</p>';
 
     if (scopedEntries.length > 0) {
       if (widget.kind === 'word-cloud') {
@@ -132,7 +132,7 @@ function renderHomeWidgets(widgets, context) {
             : `${d.minutes}min`;
           return `<div class="home-widget-duration-row"><strong>${escapeHtml(f.label)}</strong><span>${value}</span></div>`;
         }).filter(Boolean).join('');
-        bodyHtml = blocks || '<p class="empty-state">Pas de champ durée pour ce type.</p>';
+        bodyHtml = blocks || '<p class="empty-state">No duration field for this type.</p>';
       } else if (widget.kind === 'entries-chart') {
         bodyHtml = renderWidgetBarChart(scopedEntries, start, end);
       } else if (widget.kind === 'calendar') {
@@ -141,10 +141,10 @@ function renderHomeWidgets(widgets, context) {
     }
 
     const titleByKind = {
-      'word-cloud': 'Nuage de mots',
-      'duration-total': 'Durée totale',
-      'entries-chart': 'Nombre par jour',
-      'calendar': 'Calendrier',
+      'word-cloud': 'Word cloud',
+      'duration-total': 'Total duration',
+      'entries-chart': 'Entries per day',
+      'calendar': 'Calendar',
     };
 
     return `
@@ -166,7 +166,7 @@ function renderWidgetBarChart(entries, start, end) {
   const granularity = getGranularity(start, end);
   const grouped = groupByPeriod(entries, granularity);
   const keys = Array.from(grouped.keys()).sort();
-  if (keys.length === 0) return '<p class="empty-state">Aucune donnée.</p>';
+  if (keys.length === 0) return '<p class="empty-state">No data.</p>';
 
   const maxCount = Math.max(1, ...keys.map(k => grouped.get(k)?.length || 0));
   return `
@@ -203,7 +203,7 @@ function renderMiniCalendar(entries, typeMap, selectedTypeIds, endDate) {
     byDay.set(key, arr);
   });
 
-  const monthLabel = firstDay.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  const monthLabel = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   const weekDays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
   const cells = [];
@@ -257,38 +257,38 @@ function renderSections(data, sectionOrder = []) {
     quick: data.types.length > 0
       ? `
       <section class="dashboard-section">
-        <h2>Saisie rapide</h2>
+        <h2>Quick entry</h2>
         <div class="quick-grid">
           ${data.quickLinks}
           <a href="#/types" class="quick-card quick-card--add">
             <span class="quick-icon">➕</span>
-            <span class="quick-name">Nouveau type</span>
+            <span class="quick-name">New type</span>
           </a>
         </div>
       </section>`
       : `
       <section class="dashboard-section onboarding">
         <div class="onboarding-box">
-          <h2>Bienvenue sur My Tracker !</h2>
-          <p>Commencez par créer un <strong>type de tracking</strong> pour définir ce que vous souhaitez suivre.</p>
-          <a href="#/types" class="btn btn-primary">Créer mon premier type</a>
+          <h2>Welcome to My Tracker!</h2>
+          <p>Start by creating a <strong>tracking type</strong> to define what you want to track.</p>
+          <a href="#/types" class="btn btn-primary">Create my first type</a>
         </div>
       </section>`,
     widgets: data.widgetsData?.html
       ? `
       <section class="dashboard-section dashboard-section--widgets">
-        <h2>Stats personnalisées</h2>
+        <h2>Custom stats</h2>
         <div id="dashboard-home-widgets" class="dashboard-home-widgets dashboard-home-widgets--collapsed">${data.widgetsData.html}</div>
         ${data.widgetsData.count > 3
-          ? '<button type="button" id="btn-toggle-home-widgets" class="btn btn-secondary btn-sm home-widgets-toggle" data-expanded="false">Voir plus</button>'
+          ? '<button type="button" id="btn-toggle-home-widgets" class="btn btn-secondary btn-sm home-widgets-toggle" data-expanded="false">See more</button>'
           : ''}
       </section>`
       : '',
     history: `
       <section class="dashboard-section dashboard-section--recent">
-        <h2>Dernières saisies</h2>
+        <h2>Recent entries</h2>
         <div class="recent-list">${data.recentHtml}</div>
-        ${data.entries.length > 5 ? `<a href="#/history" class="btn btn-ghost">Voir tout l'historique</a>` : ''}
+        ${data.entries.length > 5 ? `<a href="#/history" class="btn btn-ghost">View full history</a>` : ''}
       </section>`,
   };
 
@@ -308,7 +308,7 @@ function bindDashboardWidgets() {
     const expanded = toggleBtn.dataset.expanded === 'true';
     widgetsContainer.classList.toggle('dashboard-home-widgets--collapsed', expanded);
     toggleBtn.dataset.expanded = expanded ? 'false' : 'true';
-    toggleBtn.textContent = expanded ? 'Voir plus' : 'Voir moins';
+    toggleBtn.textContent = expanded ? 'See more' : 'See less';
   });
 }
 
@@ -351,7 +351,7 @@ function buildWordFrequency(entries, type) {
 
 function renderWordCloudInline(freq) {
   const words = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 45);
-  if (words.length === 0) return '<p class="empty-state">Aucun mot significatif trouvé.</p>';
+  if (words.length === 0) return '<p class="empty-state">No significant words found.</p>';
   const max = words[0][1];
   const wordsHtml = words.map(([word, count]) => {
     const size = (0.72 + (count / max) * 1.4).toFixed(2);

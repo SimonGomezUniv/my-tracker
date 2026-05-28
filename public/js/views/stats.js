@@ -23,8 +23,8 @@ export default async function statsView() {
 
   if (types.length === 0) {
     return {
-      html: `<div class="view-stats"><div class="empty-state-box"><p>Aucun type de tracking. Créez des types et faites des saisies d'abord.</p></div></div>`,
-      title: 'Statistiques',
+      html: `<div class="view-stats"><div class="empty-state-box"><p>No tracking type found. Create a type and add entries first.</p></div></div>`,
+      title: 'Stats',
     };
   }
 
@@ -32,7 +32,7 @@ export default async function statsView() {
     `<option value="${escapeHtml(t.id)}">${escapeHtml(t.icon || '')} ${escapeHtml(t.name)}</option>`
   ).join('');
 
-  const periodOptions = [...PERIOD_PRESETS, { value: 'custom', label: 'Personnalisé' }]
+  const periodOptions = [...PERIOD_PRESETS, { value: 'custom', label: 'Custom' }]
     .map(p => `<option value="${p.value}" ${p.value === '30d' ? 'selected' : ''}>${p.label}</option>`)
     .join('');
 
@@ -47,43 +47,43 @@ export default async function statsView() {
   const html = `
     <div class="view-stats">
       <section class="editor-section">
-        <h2 class="editor-section-title">Filtres</h2>
+        <h2 class="editor-section-title">Filters</h2>
         <div class="form-row">
           <div class="form-group" style="flex:1">
-            <label class="form-label" for="stats-type">Type de tracking</label>
+            <label class="form-label" for="stats-type">Tracking type</label>
             <select id="stats-type" class="form-select">
-              <option value="">— Choisir un type —</option>
+              <option value="">— Select a type —</option>
               ${typeOptions}
             </select>
           </div>
           <div class="form-group" style="flex:1">
-            <label class="form-label" for="stats-period">Période</label>
+            <label class="form-label" for="stats-period">Period</label>
             <select id="stats-period" class="form-select">${periodOptions}</select>
           </div>
         </div>
         <div id="custom-range" class="form-row hidden" style="margin-top:8px">
           <div class="form-group">
-            <label class="form-label" for="stats-start">Du</label>
+            <label class="form-label" for="stats-start">From</label>
             <input type="date" id="stats-start" class="form-input" value="${monthAgo}" />
           </div>
           <div class="form-group">
-            <label class="form-label" for="stats-end">Au</label>
+            <label class="form-label" for="stats-end">To</label>
             <input type="date" id="stats-end" class="form-input" value="${today}" />
           </div>
         </div>
         ${allTags.length > 0 ? `
         <div style="margin-top:12px">
-          <label class="form-label" style="margin-bottom:6px;display:block">Filtrer par tags</label>
+          <label class="form-label" style="margin-bottom:6px;display:block">Filter by tags</label>
           <div class="chips-selector" id="stats-tag-chips">${tagChips}</div>
         </div>` : ''}
       </section>
 
       <div id="stats-results">
-        <p class="empty-state" style="margin-top:16px">Sélectionnez un type pour voir les statistiques.</p>
+        <p class="empty-state" style="margin-top:16px">Select a type to view statistics.</p>
       </div>
     </div>`;
 
-  return { html, title: 'Statistiques', bind: bindStatsEvents };
+  return { html, title: 'Stats', bind: bindStatsEvents };
 }
 
 // ---- Rendu des résultats ----
@@ -93,7 +93,7 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) 
   if (!container) return;
 
   if (!typeId) {
-    container.innerHTML = `<p class="empty-state" style="margin-top:16px">Sélectionnez un type pour voir les statistiques.</p>`;
+    container.innerHTML = `<p class="empty-state" style="margin-top:16px">Select a type to view statistics.</p>`;
     return;
   }
 
@@ -104,7 +104,7 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) 
     TrackingEntryModel.getInRange(start, end, typeId),
   ]);
 
-  if (!type) { container.innerHTML = `<p class="empty-state">Type introuvable.</p>`; return; }
+  if (!type) { container.innerHTML = `<p class="empty-state">Type not found.</p>`; return; }
 
   // Filtre par tags
   const entries = filterTagIds.size > 0
@@ -125,7 +125,7 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) 
     const value = field.type === 'rating'
       ? stats.avg.toFixed(1) + ' ★'
       : stats.sum % 1 === 0 ? stats.sum : stats.sum.toFixed(2);
-    const sublabel = field.type === 'rating' ? 'moyenne' : 'total';
+    const sublabel = field.type === 'rating' ? 'average' : 'total';
     return `<div class="stat-card">
       <span class="stat-value">${value}</span>
       <span class="stat-label">${escapeHtml(field.label)} (${sublabel})</span>
@@ -149,7 +149,7 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) 
   // Graphique en barres CSS
   const chartHtml = periodKeys.length > 1 ? `
     <section class="editor-section">
-      <h2 class="editor-section-title">Évolution</h2>
+      <h2 class="editor-section-title">Trend</h2>
       <div class="chart-container">
         <div class="chart-bars">
           ${periodKeys.map(key => {
@@ -174,13 +174,13 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) 
   const sorted = [...entries].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   const listHtml = sorted.length > 0
     ? sorted.map(e => renderEntryCardCompact(e, type)).join('')
-    : `<p class="empty-state">Aucune saisie sur cette période.</p>`;
+    : `<p class="empty-state">No entries during this period.</p>`;
 
   container.innerHTML = `
     <div class="dashboard-stats" style="margin-bottom:16px">
       <div class="stat-card">
         <span class="stat-value">${total}</span>
-        <span class="stat-label">Saisies sur la période</span>
+        <span class="stat-label">Entries in period</span>
       </div>
       ${numStatsHtml}
       ${durationStatsHtml}
@@ -189,7 +189,7 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set()) 
     ${calendarHtml}
     ${wordCloudHtml}
     <section class="editor-section">
-      <h2 class="editor-section-title">Liste des saisies (${total})</h2>
+      <h2 class="editor-section-title">Entries list (${total})</h2>
       <div class="history-list">${listHtml}</div>
     </section>`;
 }
@@ -215,8 +215,8 @@ function renderStatsCalendar(entries, type, endDate) {
     byDay.set(key, arr);
   });
 
-  const monthLabel = firstDay.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-  const weekDays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+  const monthLabel = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   const cells = [];
   for (let i = 0; i < totalCells; i++) {
@@ -242,7 +242,7 @@ function renderStatsCalendar(entries, type, endDate) {
 
   return `
     <section class="editor-section">
-      <h2 class="editor-section-title">Calendrier</h2>
+      <h2 class="editor-section-title">Calendar</h2>
       <div class="calendar-widget">
         <div class="calendar-widget-header">${escapeHtml(monthLabel)}</div>
         <div class="calendar-weekdays">${weekDays.map(d => `<span>${d}</span>`).join('')}</div>
@@ -339,7 +339,7 @@ function renderWordCloud(freq) {
   }).join('');
   return `
     <section class="editor-section">
-      <h2 class="editor-section-title">Nuage de mots</h2>
+      <h2 class="editor-section-title">Word cloud</h2>
       <div class="word-cloud">${wordsHtml}</div>
     </section>`;
 }
@@ -350,12 +350,12 @@ function renderEntryCardCompact(entry, type) {
     const val = entry.data?.[f.name];
     if (val === null || val === undefined || val === '') return '';
     let display = String(val);
-    if (f.type === 'boolean') display = val ? 'Oui' : 'Non';
+    if (f.type === 'boolean') display = val ? 'Yes' : 'No';
     if (f.type === 'rating') {
       const v = parseInt(val) || 0;
       display = '★'.repeat(Math.min(v, 5)) + '☆'.repeat(Math.max(0, 5 - v));
     }
-    return `<span class="entry-field-chip"><strong>${escapeHtml(f.label)} :</strong> ${escapeHtml(display)}</span>`;
+    return `<span class="entry-field-chip"><strong>${escapeHtml(f.label)}:</strong> ${escapeHtml(display)}</span>`;
   }).filter(Boolean).join('');
 
   return `

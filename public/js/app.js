@@ -37,8 +37,8 @@ router.register('groups', async (params) => {
 router.register('entry', async (params) => {
   if (params[0] === 'edit') return editEntryView(params.slice(1));
   return {
-    html: `<div class="view-error"><h2>Route inconnue</h2><a href="#/dashboard" class="btn btn-ghost">← Accueil</a></div>`,
-    title: 'Erreur',
+    html: `<div class="view-error"><h2>Unknown route</h2><a href="#/dashboard" class="btn btn-ghost">← Home</a></div>`,
+    title: 'Error',
   };
 });
 

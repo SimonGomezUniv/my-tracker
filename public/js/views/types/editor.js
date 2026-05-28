@@ -7,11 +7,11 @@ import { escapeHtml, showToast, uniqueFieldName } from '../../utils.js';
 import router from '../../router.js';
 
 export const FIELD_TYPES = [
-  { value: 'string',   label: 'Texte libre' },
-  { value: 'numeric',  label: 'Nombre' },
-  { value: 'boolean',  label: 'Oui / Non' },
-  { value: 'rating',   label: 'Note (1–5 étoiles)' },
-  { value: 'duration', label: 'Durée (HH:MM)' },
+  { value: 'string',   label: 'Text' },
+  { value: 'numeric',  label: 'Number' },
+  { value: 'boolean',  label: 'Yes / No' },
+  { value: 'rating',   label: 'Rating (1-5 stars)' },
+  { value: 'duration', label: 'Duration (HH:MM)' },
 ];
 
 const FIELD_TYPE_LABELS = Object.fromEntries(FIELD_TYPES.map(ft => [ft.value, ft.label]));
@@ -24,8 +24,8 @@ export default async function typesEditorView(params) {
     existingType = await TrackingTypeModel.get(typeId);
     if (!existingType) {
       return {
-        html: `<div class="view-error"><h2>Type introuvable</h2><a href="#/types" class="btn btn-ghost">← Retour</a></div>`,
-        title: 'Erreur',
+        html: `<div class="view-error"><h2>Type not found</h2><a href="#/types" class="btn btn-ghost">← Back</a></div>`,
+        title: 'Error',
       };
     }
   }
@@ -42,30 +42,30 @@ export default async function typesEditorView(params) {
             ${escapeHtml(t.name)}
           </span>`).join('')}
        </div>`
-    : `<p class="text-muted">Aucun tag disponible. <a href="#/tags">Créer des tags</a> pour les utiliser ici.</p>`;
+    : `<p class="text-muted">No tags available. <a href="#/tags">Create tags</a> to use them here.</p>`;
 
   const html = `
     <div class="view-editor">
-      <a href="#/types" class="btn btn-ghost btn-back">← Retour aux types</a>
+      <a href="#/types" class="btn btn-ghost btn-back">← Back to types</a>
       <form id="type-form" novalidate>
 
         <section class="editor-section">
-          <h2 class="editor-section-title">Informations générales</h2>
+          <h2 class="editor-section-title">General information</h2>
           <div class="form-row">
             <div class="form-group" style="flex:1">
-              <label class="form-label" for="type-name">Nom <span class="required-star">*</span></label>
+              <label class="form-label" for="type-name">Name <span class="required-star">*</span></label>
               <input type="text" id="type-name" class="form-input"
                 value="${escapeHtml(existingType?.name || '')}"
-                placeholder="ex : Humeur, Fringale, Baby-sitter…" required />
+                placeholder="e.g. Mood, Craving, Babysitter..." required />
             </div>
             <div class="form-group form-group--narrow">
-              <label class="form-label" for="type-icon">Icône</label>
+              <label class="form-label" for="type-icon">Icon</label>
               <input type="text" id="type-icon" class="form-input form-input--center"
                 value="${escapeHtml(existingType?.icon || '📍')}"
                 maxlength="2" placeholder="📍" />
             </div>
             <div class="form-group form-group--narrow">
-              <label class="form-label" for="type-color">Couleur</label>
+              <label class="form-label" for="type-color">Color</label>
               <input type="color" id="type-color" class="form-color"
                 value="${existingType?.color || '#6366f1'}" />
             </div>
@@ -74,7 +74,7 @@ export default async function typesEditorView(params) {
             <label class="form-label" for="type-description">Description</label>
             <input type="text" id="type-description" class="form-input"
               value="${escapeHtml(existingType?.description || '')}"
-              placeholder="Description optionnelle…" />
+              placeholder="Optional description..." />
           </div>
         </section>
 
@@ -84,24 +84,24 @@ export default async function typesEditorView(params) {
         </section>
 
         <section class="editor-section">
-          <h2 class="editor-section-title">Champs de saisie</h2>
+          <h2 class="editor-section-title">Entry fields</h2>
           <p class="text-muted" style="margin-bottom:12px">
-            Définissez les données à saisir à chaque utilisation de ce type.
-            Sans champ, seules la date et une note libre seront disponibles.
+            Define the data to collect each time this type is used.
+            Without fields, only date/time and note will be available.
           </p>
           <div id="fields-list-container"></div>
           <button type="button" id="btn-add-field" class="btn btn-secondary" style="margin-top:8px">
-            ➕ Ajouter un champ
+            ➕ Add field
           </button>
           <div id="field-inline-form" class="card card--inline hidden" style="margin-top:12px">
-            <h4 id="field-inline-title" class="card-title" style="margin-bottom:12px">Nouveau champ</h4>
+            <h4 id="field-inline-title" class="card-title" style="margin-bottom:12px">New field</h4>
             <div class="form-row">
               <div class="form-group" style="flex:2">
-                <label class="form-label" for="field-label">Libellé <span class="required-star">*</span></label>
-                <input type="text" id="field-label" class="form-input" placeholder="ex : Score, Durée, Commentaire…" />
+                <label class="form-label" for="field-label">Label <span class="required-star">*</span></label>
+                <input type="text" id="field-label" class="form-input" placeholder="e.g. Score, Duration, Comment..." />
               </div>
               <div class="form-group" style="flex:1">
-                <label class="form-label" for="field-type">Type de donnée</label>
+                <label class="form-label" for="field-type">Data type</label>
                 <select id="field-type" class="form-select">
                   ${FIELD_TYPES.map(ft => `<option value="${ft.value}">${ft.label}</option>`).join('')}
                 </select>
@@ -110,27 +110,27 @@ export default async function typesEditorView(params) {
                 <label class="form-label">&nbsp;</label>
                 <label class="checkbox-label">
                   <input type="checkbox" id="field-required" />
-                  Obligatoire
+                  Required
                 </label>
               </div>
             </div>
             <div class="form-actions">
-              <button type="button" id="btn-confirm-field" class="btn btn-primary">✓ Valider</button>
-              <button type="button" id="btn-cancel-field" class="btn btn-ghost">Annuler</button>
+              <button type="button" id="btn-confirm-field" class="btn btn-primary">✓ Confirm</button>
+              <button type="button" id="btn-cancel-field" class="btn btn-ghost">Cancel</button>
             </div>
           </div>
         </section>
 
         <div class="form-actions form-actions--main">
-          <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
-          <a href="#/types" class="btn btn-ghost">Annuler</a>
+          <button type="submit" class="btn btn-primary">💾 Save</button>
+          <a href="#/types" class="btn btn-ghost">Cancel</a>
         </div>
       </form>
     </div>`;
 
   return {
     html,
-    title: existingType ? `Modifier : ${existingType.name}` : 'Nouveau type',
+    title: existingType ? `Edit: ${existingType.name}` : 'New type',
     bind: () => bindTypesEditorEvents(existingType, selectedTagIds),
   };
 }
@@ -142,14 +142,14 @@ function renderFieldsList(fields) {
   if (!container) return;
 
   if (fields.length === 0) {
-    container.innerHTML = `<p class="empty-state">Aucun champ défini.</p>`;
+    container.innerHTML = `<p class="empty-state">No fields defined.</p>`;
     return;
   }
 
   container.innerHTML = `
     <div class="fields-list">
       <div class="fields-list-header">
-        <span>Libellé</span><span>Nom technique</span><span>Type</span><span>Req.</span><span></span>
+        <span>Label</span><span>Technical name</span><span>Type</span><span>Req.</span><span></span>
       </div>
       ${fields.map((f, i) => `
         <div class="field-row">
@@ -158,8 +158,8 @@ function renderFieldsList(fields) {
           <span class="badge">${FIELD_TYPE_LABELS[f.type] || f.type}</span>
           <span class="field-req">${f.required ? '✓' : '—'}</span>
           <div class="field-row-actions">
-            <button type="button" class="btn btn-sm btn-secondary btn-edit-field" data-index="${i}" title="Modifier">✏️</button>
-            <button type="button" class="btn btn-sm btn-danger btn-delete-field" data-index="${i}" title="Supprimer">🗑️</button>
+            <button type="button" class="btn btn-sm btn-secondary btn-edit-field" data-index="${i}" title="Edit">✏️</button>
+            <button type="button" class="btn btn-sm btn-danger btn-delete-field" data-index="${i}" title="Delete">🗑️</button>
           </div>
         </div>`).join('')}
     </div>`;
@@ -183,12 +183,12 @@ function openFieldInlineForm(fields, editIndex = -1) {
     document.getElementById('field-label').value = f.label;
     document.getElementById('field-type').value = f.type;
     document.getElementById('field-required').checked = !!f.required;
-    document.getElementById('field-inline-title').textContent = 'Modifier le champ';
+    document.getElementById('field-inline-title').textContent = 'Edit field';
   } else {
     document.getElementById('field-label').value = '';
     document.getElementById('field-type').value = 'string';
     document.getElementById('field-required').checked = false;
-    document.getElementById('field-inline-title').textContent = 'Nouveau champ';
+    document.getElementById('field-inline-title').textContent = 'New field';
   }
   inlineForm.dataset.editIndex = String(editIndex);
   inlineForm.classList.remove('hidden');
@@ -264,14 +264,14 @@ function bindTypesEditorEvents(existingType, selectedTagIds) {
     try {
       if (existingType) {
         await TrackingTypeModel.update(existingType.id, data);
-        showToast(`Type "${name}" mis à jour.`, 'success');
+        showToast(`Type "${name}" updated.`, 'success');
       } else {
         await TrackingTypeModel.create(data);
-        showToast(`Type "${name}" créé.`, 'success');
+        showToast(`Type "${name}" created.`, 'success');
       }
       router.navigate('types');
     } catch (err) {
-      showToast(`Erreur : ${err.message}`, 'error');
+      showToast(`Error: ${err.message}`, 'error');
     }
   });
 }

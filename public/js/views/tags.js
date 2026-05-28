@@ -8,27 +8,27 @@ export default async function tagsView() {
   const html = `
     <div class="view-tags">
       <div class="view-header">
-        <p class="view-subtitle">Les tags permettent de catégoriser vos saisies et types de tracking.</p>
-        <button id="btn-new-tag" class="btn btn-primary">➕ Nouveau tag</button>
+        <p class="view-subtitle">Tags help categorize your entries and tracking types.</p>
+        <button id="btn-new-tag" class="btn btn-primary">➕ New tag</button>
       </div>
 
       <div id="tag-form-container" class="card card--form hidden">
-        <h3 id="tag-form-title" class="card-title">Nouveau tag</h3>
+        <h3 id="tag-form-title" class="card-title">New tag</h3>
         <form id="tag-form">
           <input type="hidden" id="tag-id" />
           <div class="form-row">
             <div class="form-group" style="flex:1">
-              <label class="form-label" for="tag-name">Nom <span class="required-star">*</span></label>
-              <input type="text" id="tag-name" class="form-input" placeholder="ex : urgent, perso, travail…" required />
+              <label class="form-label" for="tag-name">Name <span class="required-star">*</span></label>
+              <input type="text" id="tag-name" class="form-input" placeholder="e.g. urgent, personal, work..." required />
             </div>
             <div class="form-group form-group--narrow">
-              <label class="form-label" for="tag-color">Couleur</label>
+              <label class="form-label" for="tag-color">Color</label>
               <input type="color" id="tag-color" class="form-color" value="#6366f1" />
             </div>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
-            <button type="button" id="btn-cancel-tag" class="btn btn-ghost">Annuler</button>
+            <button type="submit" class="btn btn-primary">💾 Save</button>
+            <button type="button" id="btn-cancel-tag" class="btn btn-ghost">Cancel</button>
           </div>
         </form>
       </div>
@@ -45,7 +45,7 @@ async function renderTagsList() {
   const tags = await TagModel.getAll();
 
   if (tags.length === 0) {
-    container.innerHTML = `<p class="empty-state" style="margin-top:24px">Aucun tag. Cliquez sur "Nouveau tag" pour commencer.</p>`;
+    container.innerHTML = `<p class="empty-state" style="margin-top:24px">No tags yet. Click "New tag" to get started.</p>`;
     return;
   }
 
@@ -58,10 +58,10 @@ async function renderTagsList() {
             <button class="btn btn-sm btn-secondary btn-edit-tag"
               data-id="${escapeHtml(t.id)}"
               data-name="${escapeHtml(t.name)}"
-              data-color="${escapeHtml(t.color)}">✏️ Modifier</button>
+              data-color="${escapeHtml(t.color)}">✏️ Edit</button>
             <button class="btn btn-sm btn-danger btn-delete-tag"
               data-id="${escapeHtml(t.id)}"
-              data-name="${escapeHtml(t.name)}">🗑️ Supprimer</button>
+              data-name="${escapeHtml(t.name)}">🗑️ Delete</button>
           </div>
         </div>`).join('')}
     </div>`;
@@ -71,7 +71,7 @@ async function renderTagsList() {
       document.getElementById('tag-id').value = btn.dataset.id;
       document.getElementById('tag-name').value = btn.dataset.name;
       document.getElementById('tag-color').value = btn.dataset.color;
-      document.getElementById('tag-form-title').textContent = 'Modifier le tag';
+      document.getElementById('tag-form-title').textContent = 'Edit tag';
       document.getElementById('tag-form-container').classList.remove('hidden');
       document.getElementById('tag-name').focus();
     });
@@ -79,9 +79,9 @@ async function renderTagsList() {
 
   container.querySelectorAll('.btn-delete-tag').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm(`Supprimer le tag "${btn.dataset.name}" ?`)) return;
+      if (!confirm(`Delete tag "${btn.dataset.name}"?`)) return;
       await TagModel.delete(btn.dataset.id);
-      showToast(`Tag "${btn.dataset.name}" supprimé.`, 'success');
+      showToast(`Tag "${btn.dataset.name}" deleted.`, 'success');
       await renderTagsList();
     });
   });
@@ -91,7 +91,7 @@ function resetTagForm() {
   document.getElementById('tag-id').value = '';
   document.getElementById('tag-name').value = '';
   document.getElementById('tag-color').value = '#6366f1';
-  document.getElementById('tag-form-title').textContent = 'Nouveau tag';
+  document.getElementById('tag-form-title').textContent = 'New tag';
   document.getElementById('tag-form-container').classList.add('hidden');
 }
 
@@ -115,10 +115,10 @@ function bindTagsEvents() {
 
     if (id) {
       await TagModel.update(id, { name, color });
-      showToast(`Tag "${name}" mis à jour.`, 'success');
+      showToast(`Tag "${name}" updated.`, 'success');
     } else {
       await TagModel.create({ name, color });
-      showToast(`Tag "${name}" créé.`, 'success');
+      showToast(`Tag "${name}" created.`, 'success');
     }
     resetTagForm();
     await renderTagsList();

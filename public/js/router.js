@@ -52,9 +52,9 @@ const router = (() => {
     if (!handler) {
       container.innerHTML = `
         <div class="view-error">
-          <h2>Page introuvable</h2>
-          <p>La route <code>${path}</code> n'existe pas.</p>
-          <a href="#/dashboard" class="btn btn-primary">Retour au tableau de bord</a>
+          <h2>Page not found</h2>
+          <p>The route <code>${path}</code> does not exist.</p>
+          <a href="#/dashboard" class="btn btn-primary">Back to dashboard</a>
         </div>`;
       return;
     }
@@ -73,7 +73,7 @@ const router = (() => {
       console.error('[router] Erreur lors du rendu de la route', routeName, err);
       container.innerHTML = `
         <div class="view-error">
-          <h2>Erreur de chargement</h2>
+          <h2>Loading error</h2>
           <p>${err.message}</p>
         </div>`;
     }

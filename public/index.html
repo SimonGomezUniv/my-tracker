@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#6366f1" />
-  <meta name="description" content="My Tracker — Application de tracking d'informations" />
+  <meta name="description" content="My Tracker — Personal tracking application" />
 
   <title>My Tracker</title>
 
@@ -18,36 +18,36 @@
 
   <div id="app">
 
-    <header class="top-nav" aria-label="Navigation principale">
+    <header class="top-nav" aria-label="Main navigation">
       <a href="#/dashboard" class="nav-link" data-routes="dashboard">
         <span class="nav-icon" aria-hidden="true">🏠</span>
         <span class="nav-label">Home</span>
       </a>
       <a href="#/history" class="nav-link" data-routes="history">
         <span class="nav-icon" aria-hidden="true">🕘</span>
-        <span class="nav-label">Historique</span>
+        <span class="nav-label">History</span>
       </a>
       <a href="#/stats" class="nav-link" data-routes="stats">
         <span class="nav-icon" aria-hidden="true">📊</span>
-        <span class="nav-label">Statistique</span>
+        <span class="nav-label">Stats</span>
       </a>
       <a href="#/settings" class="nav-link" data-routes="settings|types|groups|tags">
         <span class="nav-icon" aria-hidden="true">⚙️</span>
-        <span class="nav-label">Paramètre</span>
+        <span class="nav-label">Settings</span>
       </a>
     </header>
 
     <main id="view-container" class="view-container">
-      <!-- Les vues sont injectées ici par le router -->
+      <!-- Views are rendered here by the router -->
       <div class="loading-screen">
         <span class="loading-spinner"></span>
-        <p>Chargement…</p>
+        <p>Loading...</p>
       </div>
     </main>
 
   </div><!-- #app -->
 
-  <!-- Environnement injecté par le serveur -->
+  <!-- Environment injected by the server -->
   <script src="./env.js"></script>
 
   <!-- Application -->

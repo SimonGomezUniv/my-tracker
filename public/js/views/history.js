@@ -27,26 +27,26 @@ export default async function historyView() {
   const html = `
     <div class="view-history">
       <section class="editor-section history-filters">
-        <h2 class="editor-section-title">Filtres</h2>
+        <h2 class="editor-section-title">Filters</h2>
         <div class="form-row">
           <div class="form-group" style="flex:1">
             <label class="form-label" for="hist-type">Type</label>
             <select id="hist-type" class="form-select">
-              <option value="">Tous les types</option>
+              <option value="">All types</option>
               ${typeOptions}
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" for="hist-start">Du</label>
+            <label class="form-label" for="hist-start">From</label>
             <input type="date" id="hist-start" class="form-input" value="${startDate}" />
           </div>
           <div class="form-group">
-            <label class="form-label" for="hist-end">Au</label>
+            <label class="form-label" for="hist-end">To</label>
             <input type="date" id="hist-end" class="form-input" value="${endDate}" />
           </div>
           <div class="form-group form-group--checkbox-align">
             <label class="form-label">&nbsp;</label>
-            <button id="hist-clear" class="btn btn-ghost btn-sm">Réinitialiser</button>
+            <button id="hist-clear" class="btn btn-ghost btn-sm">Reset</button>
           </div>
         </div>
         ${allTags.length > 0 ? `
@@ -59,7 +59,7 @@ export default async function historyView() {
       <div id="history-results"></div>
     </div>`;
 
-  return { html, title: 'Historique', bind: () => bindHistoryEvents() };
+  return { html, title: 'History', bind: () => bindHistoryEvents() };
 }
 
 // ---- Rendu des résultats ----
@@ -87,15 +87,15 @@ async function renderHistoryResults(filterTypeId, startDate, endDate, filterTagI
   if (sorted.length === 0) {
     container.innerHTML = `
       <div class="empty-state-box" style="margin-top:16px">
-        <p>Aucune saisie trouvée pour ces filtres.</p>
-        <a href="#/new-entry" class="btn btn-primary">Faire une saisie</a>
+        <p>No entries found for these filters.</p>
+        <a href="#/new-entry" class="btn btn-primary">Create an entry</a>
       </div>`;
     return;
   }
 
   container.innerHTML = `
     <div class="history-header">
-      <span class="badge badge-primary">${sorted.length} saisie${sorted.length > 1 ? 's' : ''}</span>
+      <span class="badge badge-primary">${sorted.length} entr${sorted.length > 1 ? 'ies' : 'y'}</span>
     </div>
     <div class="history-list">
       ${sorted.map(entry => renderEntryCard(entry, typeMap[entry.trackingTypeId], true)).join('')}
@@ -103,9 +103,9 @@ async function renderHistoryResults(filterTypeId, startDate, endDate, filterTagI
 
   container.querySelectorAll('.btn-delete-entry').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Supprimer cette saisie ?')) return;
+      if (!confirm('Delete this entry?')) return;
       await TrackingEntryModel.delete(btn.dataset.id);
-      showToast('Saisie supprimée.', 'success');
+      showToast('Entry deleted.', 'success');
       const typeId  = document.getElementById('hist-type')?.value || '';
       const start   = document.getElementById('hist-start')?.value || '';
       const end     = document.getElementById('hist-end')?.value || '';
@@ -126,12 +126,12 @@ export function renderEntryCard(entry, type, showActions = false) {
     const val = entry.data?.[f.name];
     if (val === null || val === undefined || val === '') return '';
     let display = String(val);
-    if (f.type === 'boolean') display = val ? 'Oui' : 'Non';
+    if (f.type === 'boolean') display = val ? 'Yes' : 'No';
     if (f.type === 'rating') {
       const v = parseInt(val) || 0;
       display = '★'.repeat(Math.min(v, 5)) + '☆'.repeat(Math.max(0, 5 - v));
     }
-    return `<span class="entry-field-chip"><strong>${escapeHtml(f.label)} :</strong> ${escapeHtml(display)}</span>`;
+    return `<span class="entry-field-chip"><strong>${escapeHtml(f.label)}:</strong> ${escapeHtml(display)}</span>`;
   }).filter(Boolean).join('');
 
   return `
@@ -144,8 +144,8 @@ export function renderEntryCard(entry, type, showActions = false) {
         </div>
         ${showActions ? `
         <div class="entry-item-actions">
-          <a href="#/entry/edit/${escapeHtml(entry.id)}" class="btn btn-sm btn-secondary" title="Modifier">✏️</a>
-          <button class="btn btn-sm btn-danger btn-delete-entry" data-id="${escapeHtml(entry.id)}" title="Supprimer">🗑️</button>
+          <a href="#/entry/edit/${escapeHtml(entry.id)}" class="btn btn-sm btn-secondary" title="Edit">✏️</a>
+          <button class="btn btn-sm btn-danger btn-delete-entry" data-id="${escapeHtml(entry.id)}" title="Delete">🗑️</button>
         </div>` : ''}
       </div>
       ${fieldsHtml ? `<div class="entry-fields-row">${fieldsHtml}</div>` : ''}

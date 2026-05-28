@@ -9,13 +9,13 @@ export default async function groupsListView() {
   const html = `
     <div class="view-list">
       <div class="view-header">
-        <p class="view-subtitle">Les groupes permettent de regrouper plusieurs types de tracking sous une même catégorie.</p>
-        <a href="#/groups/new" class="btn btn-primary">➕ Nouveau groupe</a>
+        <p class="view-subtitle">Groups let you organize multiple tracking types under one category.</p>
+        <a href="#/groups/new" class="btn btn-primary">➕ New group</a>
       </div>
       <div id="groups-container"></div>
     </div>`;
 
-  return { html, title: 'Groupes', bind: bindGroupsListEvents };
+  return { html, title: 'Groups', bind: bindGroupsListEvents };
 }
 
 async function renderGroupsList() {
@@ -31,8 +31,8 @@ async function renderGroupsList() {
   if (groups.length === 0) {
     container.innerHTML = `
       <div class="empty-state-box">
-        <p>Aucun groupe défini.</p>
-        <a href="#/groups/new" class="btn btn-primary">Créer mon premier groupe</a>
+        <p>No groups defined yet.</p>
+        <a href="#/groups/new" class="btn btn-primary">Create my first group</a>
       </div>`;
     return;
   }
@@ -48,10 +48,10 @@ async function renderGroupsList() {
           <div class="item-card-header">
             <span class="item-icon">${escapeHtml(g.icon || '📁')}</span>
             <div class="item-card-actions">
-              <a href="#/groups/edit/${escapeHtml(g.id)}" class="btn btn-sm btn-secondary" title="Modifier">✏️</a>
+              <a href="#/groups/edit/${escapeHtml(g.id)}" class="btn btn-sm btn-secondary" title="Edit">✏️</a>
               <button class="btn btn-sm btn-danger btn-delete-item"
                 data-id="${escapeHtml(g.id)}"
-                data-name="${escapeHtml(g.name)}" title="Supprimer">🗑️</button>
+                data-name="${escapeHtml(g.name)}" title="Delete">🗑️</button>
             </div>
           </div>
           <div class="item-card-body">
@@ -75,9 +75,9 @@ async function renderGroupsList() {
 
   container.querySelectorAll('.btn-delete-item').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm(`Supprimer le groupe "${btn.dataset.name}" ?`)) return;
+      if (!confirm(`Delete group "${btn.dataset.name}"?`)) return;
       await TrackingGroupModel.delete(btn.dataset.id);
-      showToast(`Groupe "${btn.dataset.name}" supprimé.`, 'success');
+      showToast(`Group "${btn.dataset.name}" deleted.`, 'success');
       await renderGroupsList();
     });
   });

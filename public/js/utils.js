@@ -52,7 +52,7 @@ export function showToast(message, type = 'info', duration = 3000) {
 export function formatDate(isoString, options = {}) {
   if (!isoString) return '—';
   const defaults = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-  return new Date(isoString).toLocaleString('fr-FR', { ...defaults, ...options });
+  return new Date(isoString).toLocaleString('en-US', { ...defaults, ...options });
 }
 
 /**

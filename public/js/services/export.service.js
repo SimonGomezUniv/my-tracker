@@ -26,9 +26,9 @@ export async function exportData() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('Export téléchargé.', 'success');
+    showToast('Export downloaded.', 'success');
   } catch (err) {
-    showToast(`Erreur export : ${err.message}`, 'error');
+    showToast(`Export error: ${err.message}`, 'error');
   }
 }
 
@@ -42,7 +42,7 @@ export async function importData(file, replace = true) {
     const text = await file.text();
     const data = JSON.parse(text);
     if (!data.trackingTypes && !data.trackingEntries) {
-      throw new Error('Fichier invalide : format non reconnu.');
+      throw new Error('Invalid file: unrecognized format.');
     }
     await db.importAll(data, replace);
 
@@ -52,10 +52,10 @@ export async function importData(file, replace = true) {
       saveHomeConfig(importedHomeConfig);
     }
 
-    showToast(`Import réussi (${replace ? 'remplacement' : 'fusion'}).`, 'success');
+    showToast(`Import successful (${replace ? 'replace' : 'merge'}).`, 'success');
     router.navigate('dashboard');
   } catch (err) {
-    showToast(`Erreur import : ${err.message}`, 'error');
+    showToast(`Import error: ${err.message}`, 'error');
   }
 }
 
@@ -65,9 +65,9 @@ export async function importData(file, replace = true) {
 export async function resetData() {
   try {
     await db.resetAll();
-    showToast('Toutes les données ont été supprimées.', 'success');
+    showToast('All data has been deleted.', 'success');
     router.navigate('dashboard');
   } catch (err) {
-    showToast(`Erreur reset : ${err.message}`, 'error');
+    showToast(`Reset error: ${err.message}`, 'error');
   }
 }

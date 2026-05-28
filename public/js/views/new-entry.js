@@ -19,8 +19,8 @@ export default async function newEntryView(params) {
   ]);
   if (!type) {
     return {
-      html: `<div class="view-error"><h2>Type introuvable</h2><a href="#/new-entry" class="btn btn-ghost">← Retour</a></div>`,
-      title: 'Erreur',
+      html: `<div class="view-error"><h2>Type not found</h2><a href="#/new-entry" class="btn btn-ghost">← Back</a></div>`,
+      title: 'Error',
     };
   }
   return renderEntryForm(type, null, allTags);
@@ -31,18 +31,18 @@ export default async function newEntryView(params) {
 export async function editEntryView(params) {
   const entryId = params[0] || null;
   if (!entryId) {
-    return { html: `<div class="view-error"><h2>Identifiant manquant</h2><a href="#/history" class="btn btn-ghost">← Retour</a></div>`, title: 'Erreur' };
+    return { html: `<div class="view-error"><h2>Missing identifier</h2><a href="#/history" class="btn btn-ghost">← Back</a></div>`, title: 'Error' };
   }
   const entry = await TrackingEntryModel.get(entryId);
   if (!entry) {
-    return { html: `<div class="view-error"><h2>Saisie introuvable</h2><a href="#/history" class="btn btn-ghost">← Retour</a></div>`, title: 'Erreur' };
+    return { html: `<div class="view-error"><h2>Entry not found</h2><a href="#/history" class="btn btn-ghost">← Back</a></div>`, title: 'Error' };
   }
   const [type, allTags] = await Promise.all([
     TrackingTypeModel.get(entry.trackingTypeId),
     TagModel.getAll(),
   ]);
   if (!type) {
-    return { html: `<div class="view-error"><h2>Type introuvable</h2><a href="#/history" class="btn btn-ghost">← Retour</a></div>`, title: 'Erreur' };
+    return { html: `<div class="view-error"><h2>Type not found</h2><a href="#/history" class="btn btn-ghost">← Back</a></div>`, title: 'Error' };
   }
   return renderEntryForm(type, entry, allTags);
 }
@@ -53,14 +53,14 @@ async function renderTypeSelector() {
   const types = await TrackingTypeModel.getAll();
   if (types.length === 0) {
     return {
-      html: `<div class="view-entry-select"><div class="empty-state-box"><p>Aucun type de tracking défini. Créez-en un d'abord.</p><a href="#/types/new" class="btn btn-primary">Créer un type</a></div></div>`,
-      title: 'Nouvelle saisie',
+      html: `<div class="view-entry-select"><div class="empty-state-box"><p>No tracking type defined yet. Create one first.</p><a href="#/types/new" class="btn btn-primary">Create a type</a></div></div>`,
+      title: 'New entry',
     };
   }
   return {
     html: `
       <div class="view-entry-select">
-        <p class="view-subtitle" style="margin-bottom:20px">Choisissez le type de tracking à saisir.</p>
+        <p class="view-subtitle" style="margin-bottom:20px">Choose the tracking type for this entry.</p>
         <div class="items-grid">
           ${types.map(t => `
             <a href="#/new-entry/${escapeHtml(t.id)}" class="item-card item-card--link" style="--card-color: ${escapeHtml(t.color || '#6366f1')}">
@@ -72,7 +72,7 @@ async function renderTypeSelector() {
             </a>`).join('')}
         </div>
       </div>`,
-    title: 'Nouvelle saisie',
+    title: 'New entry',
   };
 }
 
@@ -103,7 +103,7 @@ function renderEntryForm(type, existingEntry, allTags) {
 
   const html = `
     <div class="view-entry-form">
-      <a href="${backUrl}" class="btn btn-ghost btn-back">← Retour</a>
+      <a href="${backUrl}" class="btn btn-ghost btn-back">← Back</a>
       <div class="entry-form-header" style="border-left-color: ${escapeHtml(type.color || '#6366f1')}">
         <span class="entry-form-icon">${escapeHtml(type.icon || '📍')}</span>
         <div>
@@ -114,40 +114,40 @@ function renderEntryForm(type, existingEntry, allTags) {
 
       <form id="entry-form" novalidate>
         <section class="editor-section">
-          <h2 class="editor-section-title">Date & heure</h2>
+          <h2 class="editor-section-title">Date & time</h2>
           <div class="form-group">
-            <label class="form-label" for="entry-timestamp">Date et heure de la saisie</label>
+            <label class="form-label" for="entry-timestamp">Entry date and time</label>
             <input type="datetime-local" id="entry-timestamp" class="form-input" value="${defaultTs}" required />
           </div>
         </section>
 
         ${type.fields.length > 0 ? `
         <section class="editor-section">
-          <h2 class="editor-section-title">Données</h2>
+          <h2 class="editor-section-title">Data</h2>
           ${fieldsHtml}
         </section>` : ''}
 
         ${tagsSection}
 
         <section class="editor-section">
-          <h2 class="editor-section-title">Note libre</h2>
+          <h2 class="editor-section-title">Note</h2>
           <div class="form-group">
-            <textarea id="entry-note" class="form-textarea" placeholder="Note optionnelle…" rows="2">${escapeHtml(existingEntry?.note || '')}</textarea>
+            <textarea id="entry-note" class="form-textarea" placeholder="Optional note..." rows="2">${escapeHtml(existingEntry?.note || '')}</textarea>
           </div>
         </section>
 
         <div class="form-actions form-actions--main">
           <button type="submit" class="btn btn-primary">
-            💾 ${existingEntry ? 'Modifier la saisie' : 'Enregistrer la saisie'}
+            💾 ${existingEntry ? 'Update entry' : 'Save entry'}
           </button>
-          <a href="${backUrl}" class="btn btn-ghost">Annuler</a>
+          <a href="${backUrl}" class="btn btn-ghost">Cancel</a>
         </div>
       </form>
     </div>`;
 
   return {
     html,
-    title: existingEntry ? `Modifier : ${type.name}` : `Saisir : ${type.name}`,
+    title: existingEntry ? `Edit: ${type.name}` : `Entry: ${type.name}`,
     bind: () => bindEntryFormEvents(type, existingEntry, selectedTagIds),
   };
 }
@@ -202,7 +202,7 @@ function renderFormField(field, value = null) {
         <input type="text" name="${n}" class="form-input entry-field"
           value="${escapeHtml(value ?? '')}" placeholder="ex : 2:30"
           ${field.required ? 'required' : ''} />
-        <span class="form-hint">Format HH:MM — ex : 1:45 pour 1h45</span>
+        <span class="form-hint">Format HH:MM — e.g. 1:45 for 1h45</span>
       </div>`;
 
     default:
@@ -262,25 +262,25 @@ function bindEntryFormEvents(type, existingEntry, selectedTagIds) {
       if (field.type === 'boolean') continue;
       const val = data[field.name];
       if (field.type === 'rating' && (!val || val < 1)) {
-        showToast(`Le champ "${field.label}" est obligatoire (sélectionnez une note).`, 'error'); return;
+        showToast(`Field "${field.label}" is required (select a rating).`, 'error'); return;
       }
       if (field.type !== 'rating' && (val === null || val === undefined || val === '')) {
-        showToast(`Le champ "${field.label}" est obligatoire.`, 'error'); return;
+        showToast(`Field "${field.label}" is required.`, 'error'); return;
       }
     }
 
     try {
       if (existingEntry) {
         await TrackingEntryModel.update(existingEntry.id, { timestamp, data, note, tags: [...selectedTagIds] });
-        showToast('Saisie modifiée.', 'success');
+        showToast('Entry updated.', 'success');
         router.navigate('history');
       } else {
         await TrackingEntryModel.create({ trackingTypeId: type.id, timestamp, data, note, tags: [...selectedTagIds] });
-        showToast(`Saisie "${type.name}" enregistrée.`, 'success');
+        showToast(`"${type.name}" entry saved.`, 'success');
         router.navigate('dashboard');
       }
     } catch (err) {
-      showToast(`Erreur : ${err.message}`, 'error');
+      showToast(`Error: ${err.message}`, 'error');
     }
   });
 }

@@ -1,7 +1,7 @@
 {
   "name": "My Tracker",
   "short_name": "Tracker",
-  "description": "Application de tracking d'informations personnelles",
+  "description": "Personal information tracking app",
   "start_url": "/my-tracker/",
   "scope": "/my-tracker/",
   "display": "standalone",

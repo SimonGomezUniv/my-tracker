@@ -15,8 +15,8 @@ export default async function groupsEditorView(params) {
     existingGroup = await TrackingGroupModel.get(groupId);
     if (!existingGroup) {
       return {
-        html: `<div class="view-error"><h2>Groupe introuvable</h2><a href="#/groups" class="btn btn-ghost">← Retour</a></div>`,
-        title: 'Erreur',
+        html: `<div class="view-error"><h2>Group not found</h2><a href="#/groups" class="btn btn-ghost">← Back</a></div>`,
+        title: 'Error',
       };
     }
   }
@@ -38,7 +38,7 @@ export default async function groupsEditorView(params) {
             ${escapeHtml(t.name)}
           </span>`).join('')}
        </div>`
-    : `<p class="text-muted">Aucun tag disponible. <a href="#/tags">Créer des tags</a>.</p>`;
+    : `<p class="text-muted">No tags available. <a href="#/tags">Create tags</a>.</p>`;
 
   const typesSection = allTypes.length > 0
     ? `<div class="chips-selector chips-selector--types" id="types-selector">
@@ -49,30 +49,30 @@ export default async function groupsEditorView(params) {
             ${escapeHtml(t.icon || '📍')} ${escapeHtml(t.name)}
           </span>`).join('')}
        </div>`
-    : `<p class="text-muted">Aucun type disponible. <a href="#/types/new">Créer des types</a> d'abord.</p>`;
+    : `<p class="text-muted">No type available. <a href="#/types/new">Create types</a> first.</p>`;
 
   const html = `
     <div class="view-editor">
-      <a href="#/groups" class="btn btn-ghost btn-back">← Retour aux groupes</a>
+      <a href="#/groups" class="btn btn-ghost btn-back">← Back to groups</a>
       <form id="group-form" novalidate>
 
         <section class="editor-section">
-          <h2 class="editor-section-title">Informations générales</h2>
+          <h2 class="editor-section-title">General information</h2>
           <div class="form-row">
             <div class="form-group" style="flex:1">
-              <label class="form-label" for="group-name">Nom <span class="required-star">*</span></label>
+              <label class="form-label" for="group-name">Name <span class="required-star">*</span></label>
               <input type="text" id="group-name" class="form-input"
                 value="${escapeHtml(existingGroup?.name || '')}"
-                placeholder="ex : Santé, Famille, Travail…" required />
+                placeholder="e.g. Health, Family, Work..." required />
             </div>
             <div class="form-group form-group--narrow">
-              <label class="form-label" for="group-icon">Icône</label>
+              <label class="form-label" for="group-icon">Icon</label>
               <input type="text" id="group-icon" class="form-input form-input--center"
                 value="${escapeHtml(existingGroup?.icon || '📁')}"
                 maxlength="2" placeholder="📁" />
             </div>
             <div class="form-group form-group--narrow">
-              <label class="form-label" for="group-color">Couleur</label>
+              <label class="form-label" for="group-color">Color</label>
               <input type="color" id="group-color" class="form-color"
                 value="${existingGroup?.color || '#6366f1'}" />
             </div>
@@ -81,7 +81,7 @@ export default async function groupsEditorView(params) {
             <label class="form-label" for="group-description">Description</label>
             <input type="text" id="group-description" class="form-input"
               value="${escapeHtml(existingGroup?.description || '')}"
-              placeholder="Description optionnelle…" />
+              placeholder="Optional description..." />
           </div>
         </section>
 
@@ -91,21 +91,21 @@ export default async function groupsEditorView(params) {
         </section>
 
         <section class="editor-section">
-          <h2 class="editor-section-title">Types de tracking inclus</h2>
-          <p class="text-muted" style="margin-bottom:12px">Sélectionnez les types à inclure dans ce groupe.</p>
+          <h2 class="editor-section-title">Included tracking types</h2>
+          <p class="text-muted" style="margin-bottom:12px">Select the types to include in this group.</p>
           ${typesSection}
         </section>
 
         <div class="form-actions form-actions--main">
-          <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
-          <a href="#/groups" class="btn btn-ghost">Annuler</a>
+          <button type="submit" class="btn btn-primary">💾 Save</button>
+          <a href="#/groups" class="btn btn-ghost">Cancel</a>
         </div>
       </form>
     </div>`;
 
   return {
     html,
-    title: existingGroup ? `Modifier : ${existingGroup.name}` : 'Nouveau groupe',
+    title: existingGroup ? `Edit: ${existingGroup.name}` : 'New group',
     bind: () => bindGroupsEditorEvents(existingGroup, selectedTagIds, selectedTypeIds),
   };
 }
@@ -157,14 +157,14 @@ function bindGroupsEditorEvents(existingGroup, selectedTagIds, selectedTypeIds) 
     try {
       if (existingGroup) {
         await TrackingGroupModel.update(existingGroup.id, data);
-        showToast(`Groupe "${name}" mis à jour.`, 'success');
+        showToast(`Group "${name}" updated.`, 'success');
       } else {
         await TrackingGroupModel.create(data);
-        showToast(`Groupe "${name}" créé.`, 'success');
+        showToast(`Group "${name}" created.`, 'success');
       }
       router.navigate('groups');
     } catch (err) {
-      showToast(`Erreur : ${err.message}`, 'error');
+      showToast(`Error: ${err.message}`, 'error');
     }
   });
 }
