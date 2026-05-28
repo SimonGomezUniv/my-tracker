@@ -3,7 +3,7 @@
  * Stratégie : Cache-first pour les assets statiques, Network-first pour /env.js
  */
 
-const CACHE_NAME = 'node-tracker-v1';
+const CACHE_NAME = 'node-tracker-v2';
 
 // BASE : scope du SW (ex. 'https://user.github.io/my-tracker/' ou 'http://localhost:3000/')
 // Permet de fonctionner quel que soit le sous-chemin GitHub Pages.
@@ -13,6 +13,11 @@ const PRECACHE_ASSETS = [
   '',
   'index.html',
   'manifest.json',
+  'icons/icon-192.png',
+  'icons/icon-512.png',
+  'icons/apple-touch-icon.png',
+  'icons/favicon-32.png',
+  'icons/favicon-16.png',
   'env.js',
   'css/app.css',
   'css/components.css',
