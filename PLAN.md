@@ -284,3 +284,199 @@ Remplacer la navigation latérale par un menu sticky en haut avec 4 icônes:
 - [x] Adapter le widget calendrier pour afficher des entrées multi-types
 - [x] Ajuster les styles mobile pour limiter la hauteur consommée
 - [x] Ajouter les variables light mode via `prefers-color-scheme`
+
+---
+
+## BACKLOG — EPIC Challenges, Habitudes et Objectifs
+
+### Vision
+
+Permettre la creation de challenges personnalises (jour, semaine, mois, trimestre, annee ou duree libre), le suivi de progression, les streaks, les recompenses et les rappels, tout en restant:
+
+- local-first
+- sans serveur
+- configurable
+- reutilisable sur tout domaine
+
+### Statut
+
+- [x] EPIC demarree (Phase 6.1 en cours)
+- [x] Cadrage technique valide
+- [ ] Decoupage implementation valide
+
+### Modele de donnees cible (V3)
+
+```
+Challenge
+├── id: uuid
+├── name: string
+├── description: string
+├── category: string
+├── icon: string
+├── color: string
+├── periodMode: 'fixed' | 'preset'
+├── startDate: ISO date
+├── endDate: ISO date
+├── preset?: '1w' | '1m' | '1q' | '1y'
+├── items: ChallengeItem[]
+└── createdAt: timestamp
+
+ChallengeItem
+├── id: string
+├── name: string
+├── description?: string
+├── trackingTypeId: uuid
+├── fieldName?: string
+├── metric: 'count' | 'sum'
+├── challengeType: 'boolean' | 'cumulative' | 'daily' | 'duration'
+├── targetValue: number
+├── unit?: string
+├── rewardsEnabled: boolean
+└── remindersEnabled: boolean
+
+ChallengeStats (derive)
+├── progress: number
+├── itemCount: number
+├── completedItems: number
+├── itemStats: ChallengeItemStats[]
+└── status: 'active' | 'completed' | 'failed' | 'archived'
+```
+
+Principe cle V3:
+
+- un challenge ne cree pas de seconde donnee de suivi
+- un challenge est un conteneur de periode
+- chaque item du challenge est calcule depuis `trackingEntries`
+- chaque item garde son propre streak, sa propre progression, ses propres rewards et reminders
+
+Exemple cible:
+
+- challenge `Juin`
+- item `Pompes`: plusieurs saisies par jour, somme des repetitions, succes si total jour >= 100
+- item `Handstand`: succes si total jour >= 5 min
+- item `Closed kitchen`: rappel actif, saisie booleenne quotidienne, succes si vrai
+- aucune saisie supplementaire n'est creee au niveau du challenge
+
+### User stories mappees en backlog
+
+#### US1 — Creer un challenge
+
+- [x] Ajouter le store IndexedDB `challenges`
+- [x] Creer le modele `public/js/models/challenge.js`
+- [x] Ajouter la vue `public/js/views/challenges/list.js`
+- [x] Ajouter la vue `public/js/views/challenges/editor.js`
+- [x] Ajouter les routes `#/challenges`, `#/challenges/new`, `#/challenges/edit/:id`
+- [x] Ajouter validation metier (dates + items + objectifs par item)
+
+Critere d'acceptation:
+
+- [x] Creation challenge avec periode libre et presets
+- [x] Support des 4 types par item (boolean, cumulatif, quotidien, temps)
+- [x] Un challenge peut contenir plusieurs items suivis independamment
+
+#### US2 — Progression derivee depuis les suivis existants
+
+- [x] Etendre le modele `public/js/models/challenge.js` avec `items[]`
+- [x] Supprimer le store IndexedDB `challengeEntries`
+- [x] Transformer `public/js/views/challenges/entry.js` en vue de progression detaillee
+- [x] Support multi-items dans une meme periode
+- [x] Agregation journaliere automatique depuis `trackingEntries`
+
+Critere d'acceptation:
+
+- [x] Plusieurs entrees trackers meme jour -> total calcule correctement
+- [x] Un challenge peut combiner plusieurs mesures / activites sans fusionner leurs streaks
+- [x] Aucun formulaire de saisie specifique au challenge n'est necessaire
+
+#### US3 — Calcul automatique des streaks
+
+- [x] Creer `public/js/services/challenge-stats.service.js`
+- [x] Implementer `currentStreak`, `bestStreak`, `successRate` par item
+- [x] Normaliser la logique de reussite selon le type d'item
+
+Critere d'acceptation:
+
+- [x] Affichage du streak actuel, record et taux de reussite pour chaque item
+
+#### US4 — Dashboard challenges
+
+- [x] Ajouter un widget "Challenges" dans Home
+- [x] Ajouter la progression par challenge (barre + ratio)
+- [x] Ajouter KPI globaux (actifs, streak global, completes)
+
+Critere d'acceptation:
+
+- [x] Vue synthetique lisible des challenges en cours
+
+#### US5 — Dashboard personnalisable
+
+- [x] Etendre `home-customization.service.js` pour widgets challenges
+- [x] Ajouter controle affichage/masquage/reordonnancement
+- [x] Prevoir support resize widget (si systeme de taille existe)
+
+Critere d'acceptation:
+
+- [x] Widgets challenges configurables depuis Parametres
+
+#### US6 — Historique de progression
+
+- [x] Ajouter vue progression challenge (calendrier type heatmap)
+- [x] Ajouter resume mensuel (jours validés / taux)
+
+Critere d'acceptation:
+
+- [x] Historique visuel quotidien exploitable
+
+#### US7 — Recompenses
+
+- [x] Creer service `public/js/services/challenge-rewards.service.js`
+- [x] Ajouter catalogue badges par seuils (streak et volume) par item
+- [x] Ajouter option on/off recompenses par item
+
+Critere d'acceptation:
+
+- [x] Badges debloques automatiquement si actifs sur l'item
+
+#### US8 — Notifications
+
+- [x] Ajouter preference "rappel" globale + par item
+- [x] Ajouter rappel "a l'ouverture" (pas de saisie aujourd'hui + heure seuil)
+- [x] Afficher notification locale si permission accordee
+
+Limite connue V1:
+
+- [ ] Pas de notification planifiee application fermee (sans backend push)
+
+### Plan de livraison propose (implementation)
+
+#### Phase 6.1 — Core challenges (MVP)
+
+- [x] US1 creation challenge
+- [x] US2 progression derivee
+- [x] US3 stats/streaks
+
+#### Phase 6.2 — UX et dashboard
+
+- [x] US4 dashboard challenge
+- [x] US5 personnalisation widgets
+- [x] US6 historique heatmap
+
+#### Phase 6.3 — Engagement
+
+- [x] US7 recompenses (optionnel activable)
+- [x] US8 rappels a l'ouverture
+
+### Impacts techniques transverses
+
+- [x] Router: nouvelles routes challenges
+- [x] DB: migration schema IndexedDB (version + store `challenges` uniquement)
+- [x] Export/import: inclure `challenges` + prefs reminders/rewards
+- [x] Stats: harmoniser service existant avec `challenge-stats.service.js`
+- [x] UI: ajouter section challenges dans navigation/parametres
+
+### Open points avant implementation
+
+- [ ] Definition exacte du calcul "streak global" d'un challenge multi-items
+- [ ] Strategie de suppression challenge (hard delete vs archive)
+- [ ] Regles de validation pour objectifs de type temps (format/precision)
+- [ ] Decide si on expose "habitudes" comme alias UI de "challenge quotidien"

@@ -6,6 +6,7 @@
  *   - trackingTypes
  *   - trackingGroups
  *   - trackingEntries
+ *   - challenges
  *
  * Usage:
  *   import db from './db.js';
@@ -20,9 +21,9 @@
  */
 
 const DB_NAME = 'node-tracker';
-const DB_VERSION = 1;
+const DB_VERSION = 3;
 
-const STORES = ['tags', 'trackingTypes', 'trackingGroups', 'trackingEntries'];
+const STORES = ['tags', 'trackingTypes', 'trackingGroups', 'trackingEntries', 'challenges'];
 
 const db = (() => {
   let _db = null;
@@ -32,6 +33,9 @@ const db = (() => {
 
     request.onupgradeneeded = (event) => {
       const database = event.target.result;
+      if (database.objectStoreNames.contains('challengeEntries')) {
+        database.deleteObjectStore('challengeEntries');
+      }
       STORES.forEach(storeName => {
         if (!database.objectStoreNames.contains(storeName)) {
           database.createObjectStore(storeName, { keyPath: 'id' });

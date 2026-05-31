@@ -14,7 +14,12 @@ import typesListView from './views/types/list.js';
 import typesEditorView from './views/types/editor.js';
 import groupsListView from './views/groups/list.js';
 import groupsEditorView from './views/groups/editor.js';
+import challengesListView from './views/challenges/list.js';
+import challengesEditorView from './views/challenges/editor.js';
+import challengesEntryView from './views/challenges/entry.js';
 import { applyThemePreference, startThemeAutoSync } from './services/theme.service.js';
+import { notifyNewChallengeRewards } from './services/challenge-rewards.service.js';
+import { runChallengeRemindersOnOpen } from './services/challenge-reminders.service.js';
 
 // --- Enregistrement des routes ---
 
@@ -34,6 +39,12 @@ router.register('groups', async (params) => {
   if (params.length > 0 && params[0] === 'new') return groupsEditorView([]);
   return groupsListView();
 });
+router.register('challenges', async (params) => {
+  if (params.length > 0 && params[0] === 'edit') return challengesEditorView(params.slice(1));
+  if (params.length > 0 && params[0] === 'new') return challengesEditorView([]);
+  if (params.length > 0 && params[0] === 'entry') return challengesEntryView(params.slice(1));
+  return challengesListView();
+});
 router.register('entry', async (params) => {
   if (params[0] === 'edit') return editEntryView(params.slice(1));
   return {
@@ -49,6 +60,8 @@ async function init() {
   startThemeAutoSync();
   await registerServiceWorker();
   router.init();
+  notifyNewChallengeRewards().catch(err => console.warn('[challenge-rewards] init failed', err));
+  runChallengeRemindersOnOpen().catch(err => console.warn('[challenge-reminders] init failed', err));
 }
 
 init();

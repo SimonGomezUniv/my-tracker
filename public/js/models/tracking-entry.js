@@ -1,4 +1,5 @@
 import db from '../db.js';
+import { generateId } from '../utils.js';
 
 const TrackingEntryModel = {
   getAll: () => db.getAll('trackingEntries'),
@@ -22,7 +23,7 @@ const TrackingEntryModel = {
 
   async create(data) {
     const entry = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       trackingTypeId: data.trackingTypeId,
       timestamp: data.timestamp || new Date().toISOString(),
       data: data.data || {},

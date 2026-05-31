@@ -64,6 +64,8 @@ const router = (() => {
     try {
       const result = await handler(params);
       container.innerHTML = result.html;
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      container.scrollTop = 0;
       if (typeof result.bind === 'function') {
         requestAnimationFrame(() => result.bind());
       }

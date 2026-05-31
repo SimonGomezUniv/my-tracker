@@ -3,9 +3,10 @@
  */
 
 import { PERIOD_PRESETS } from './stats.service.js';
+import { generateId } from '../utils.js';
 
 const STORAGE_KEY = 'my-tracker-home-config-v1';
-const ALLOWED_WIDGET_KINDS = new Set(['word-cloud', 'duration-total', 'entries-chart', 'calendar']);
+const ALLOWED_WIDGET_KINDS = new Set(['word-cloud', 'duration-total', 'entries-chart', 'calendar', 'challenge-summary', 'challenge-card']);
 const ALLOWED_PERIODS = new Set(PERIOD_PRESETS.map(p => p.value));
 
 const DEFAULT_CONFIG = {
@@ -14,17 +15,42 @@ const DEFAULT_CONFIG = {
     types: true,
     groups: true,
   },
-  sectionOrder: ['quick', 'widgets', 'history'],
+  quickEntryCompact: true,
+  showChecklist: true,
+  sectionOrder: ['quick', 'checklist', 'widgets', 'history'],
   widgets: [],
 };
 
-const DEFAULT_SECTION_ORDER = ['quick', 'widgets', 'history'];
+const DEFAULT_SECTION_ORDER = ['quick', 'checklist', 'widgets', 'history'];
 
 function sanitizeWidget(raw) {
   if (!raw || typeof raw !== 'object') return null;
   if (!ALLOWED_WIDGET_KINDS.has(raw.kind)) return null;
 
   const period = ALLOWED_PERIODS.has(raw.period) ? raw.period : '30d';
+  if (raw.kind === 'challenge-summary') {
+    return {
+      id: String(raw.id || generateId()),
+      kind: raw.kind,
+      trackingTypeIds: [],
+      period,
+      tagIds: [],
+    };
+  }
+
+  if (raw.kind === 'challenge-card') {
+    const challengeId = String(raw.challengeId || '').trim();
+    if (!challengeId) return null;
+    return {
+      id: String(raw.id || generateId()),
+      kind: raw.kind,
+      challengeId,
+      trackingTypeIds: [],
+      period,
+      tagIds: [],
+    };
+  }
+
   const rawIds = Array.isArray(raw.trackingTypeIds)
     ? raw.trackingTypeIds
     : [raw.trackingTypeId].filter(Boolean);
@@ -36,7 +62,7 @@ function sanitizeWidget(raw) {
   }
 
   return {
-    id: String(raw.id || (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`)),
+    id: String(raw.id || generateId()),
     kind: raw.kind,
     trackingTypeIds,
     period,
@@ -69,6 +95,8 @@ function sanitizeConfig(raw) {
       types: showCounts.types !== false,
       groups: showCounts.groups !== false,
     },
+    quickEntryCompact: cfg.quickEntryCompact !== false,
+    showChecklist: cfg.showChecklist !== false,
     sectionOrder: sanitizeSectionOrder(cfg.sectionOrder),
     widgets: Array.isArray(cfg.widgets)
       ? cfg.widgets.map(sanitizeWidget).filter(Boolean)
@@ -114,6 +142,18 @@ export function updateHomeCounts(patch) {
   return saveHomeConfig(current);
 }
 
+export function updateHomeChecklistVisibility(visible) {
+  const current = getHomeConfig();
+  current.showChecklist = visible !== false;
+  return saveHomeConfig(current);
+}
+
+export function updateHomeQuickEntryCompactMode(enabled) {
+  const current = getHomeConfig();
+  current.quickEntryCompact = enabled !== false;
+  return saveHomeConfig(current);
+}
+
 export function addHomeWidget(widgetInput) {
   const current = getHomeConfig();
   const widget = sanitizeWidget(widgetInput);
@@ -125,6 +165,24 @@ export function addHomeWidget(widgetInput) {
 export function updateHomeSectionOrder(order) {
   const current = getHomeConfig();
   current.sectionOrder = sanitizeSectionOrder(order);
+  return saveHomeConfig(current);
+}
+
+export function updateHomeWidgetOrder(widgetIds) {
+  const current = getHomeConfig();
+  const requested = Array.isArray(widgetIds) ? widgetIds.map(String) : [];
+  const byId = new Map(current.widgets.map(widget => [widget.id, widget]));
+  const nextWidgets = [];
+
+  requested.forEach(id => {
+    const widget = byId.get(id);
+    if (!widget) return;
+    nextWidgets.push(widget);
+    byId.delete(id);
+  });
+
+  byId.forEach(widget => nextWidgets.push(widget));
+  current.widgets = nextWidgets;
   return saveHomeConfig(current);
 }
 

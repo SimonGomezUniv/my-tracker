@@ -1,4 +1,5 @@
 import db from '../db.js';
+import { generateId } from '../utils.js';
 
 const TagModel = {
   getAll: () => db.getAll('tags'),
@@ -6,7 +7,7 @@ const TagModel = {
 
   async create(data) {
     const tag = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name: String(data.name).trim(),
       color: data.color || '#6366f1',
       createdAt: new Date().toISOString(),

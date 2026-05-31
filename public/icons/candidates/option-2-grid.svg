@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Option 2 Grid">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+  <g stroke="#ffffff" stroke-opacity="0.24" stroke-width="10">
+    <line x1="150" y1="128" x2="150" y2="384"/>
+    <line x1="256" y1="128" x2="256" y2="384"/>
+    <line x1="362" y1="128" x2="362" y2="384"/>
+    <line x1="128" y1="150" x2="384" y2="150"/>
+    <line x1="128" y1="256" x2="384" y2="256"/>
+    <line x1="128" y1="362" x2="384" y2="362"/>
+  </g>
+  <polyline points="138,314 205,250 261,278 374,178" fill="none" stroke="#ffffff" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="138" cy="314" r="16" fill="#ffffff"/>
+  <circle cx="205" cy="250" r="16" fill="#ffffff"/>
+  <circle cx="261" cy="278" r="16" fill="#ffffff"/>
+  <circle cx="374" cy="178" r="16" fill="#ffffff"/>
+</svg>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Icon candidates</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --line: #d6deea;
+      --text: #0f172a;
+      --muted: #475569;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+      background: radial-gradient(circle at 10% 10%, #e0ecff 0%, transparent 40%), var(--bg);
+      color: var(--text);
+    }
+    h1 { margin: 0 0 6px; font-size: 1.5rem; }
+    p { margin: 0 0 20px; color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(2, 6, 23, 0.06);
+    }
+    .card img {
+      width: 100%;
+      aspect-ratio: 1;
+      display: block;
+      border-radius: 12px;
+      background: #eef2ff;
+    }
+    .name { margin-top: 10px; font-weight: 600; font-size: 0.95rem; }
+    .hint { margin-top: 2px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>Propositions d'icones</h1>
+  <p>Ces icones ont ete creees pour ton projet et sont libres d'utilisation.</p>
+
+  <div class="grid">
+    <article class="card">
+      <img src="./option-1-orbit.svg" alt="Option 1 Orbit" />
+      <div class="name">Option 1 - Orbit</div>
+      <div class="hint">Style data + focus</div>
+    </article>
+
+    <article class="card">
+      <img src="./option-2-grid.svg" alt="Option 2 Grid" />
+      <div class="name">Option 2 - Grid</div>
+      <div class="hint">Graphique analytique</div>
+    </article>
+
+    <article class="card">
+      <img src="./option-3-pulse.svg" alt="Option 3 Pulse" />
+      <div class="name">Option 3 - Pulse</div>
+      <div class="hint">Suivi dynamique</div>
+    </article>
+
+    <article class="card">
+      <img src="./option-4-node.svg" alt="Option 4 Node" />
+      <div class="name">Option 4 - Node</div>
+      <div class="hint">Reseau d'informations</div>
+    </article>
+
+    <article class="card">
+      <img src="./option-5-check.svg" alt="Option 5 Check" />
+      <div class="name">Option 5 - Check</div>
+      <div class="hint">Validation / routine</div>
+    </article>
+
+    <article class="card">
+      <img src="./option-6-compass.svg" alt="Option 6 Compass" />
+      <div class="name">Option 6 - Compass</div>
+      <div class="hint">Direction / objectifs</div>
+    </article>
+  </div>
+</body>
+</html>

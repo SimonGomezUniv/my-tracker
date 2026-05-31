@@ -1,4 +1,5 @@
 import db from '../db.js';
+import { generateId } from '../utils.js';
 
 const TrackingGroupModel = {
   getAll: () => db.getAll('trackingGroups'),
@@ -6,7 +7,7 @@ const TrackingGroupModel = {
 
   async create(data) {
     const group = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name: String(data.name).trim(),
       description: data.description || '',
       icon: data.icon || '📁',

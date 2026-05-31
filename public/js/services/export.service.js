@@ -5,6 +5,9 @@ import db from '../db.js';
 import { showToast } from '../utils.js';
 import router from '../router.js';
 import { getHomeConfig, saveHomeConfig } from './home-customization.service.js';
+import { getThemePreference, setThemePreference } from './theme.service.js';
+import { exportChallengeRewardsState, importChallengeRewardsState } from './challenge-rewards.service.js';
+import { exportChallengeReminderState, importChallengeReminderState } from './challenge-reminders.service.js';
 
 /**
  * Télécharge toutes les données en JSON
@@ -14,6 +17,9 @@ export async function exportData() {
     const data = await db.exportAll();
     data.__appConfig = {
       home: getHomeConfig(),
+      theme: getThemePreference(),
+      challengeRewards: exportChallengeRewardsState(),
+      challengeReminders: exportChallengeReminderState(),
     };
 
     const json = JSON.stringify(data, null, 2);
@@ -52,6 +58,14 @@ export async function importData(file, replace = true) {
       saveHomeConfig(importedHomeConfig);
     }
 
+    const importedTheme = data.__appConfig?.theme;
+    if (importedTheme) {
+      setThemePreference(importedTheme);
+    }
+
+    importChallengeRewardsState(data.__appConfig?.challengeRewards || {});
+    importChallengeReminderState(data.__appConfig?.challengeReminders || {});
+
     showToast(`Import successful (${replace ? 'replace' : 'merge'}).`, 'success');
     router.navigate('dashboard');
   } catch (err) {
@@ -65,6 +79,8 @@ export async function importData(file, replace = true) {
 export async function resetData() {
   try {
     await db.resetAll();
+    importChallengeRewardsState({});
+    importChallengeReminderState({});
     showToast('All data has been deleted.', 'success');
     router.navigate('dashboard');
   } catch (err) {

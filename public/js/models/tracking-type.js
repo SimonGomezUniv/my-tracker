@@ -1,4 +1,5 @@
 import db from '../db.js';
+import { generateId } from '../utils.js';
 
 const TrackingTypeModel = {
   getAll: () => db.getAll('trackingTypes'),
@@ -6,7 +7,7 @@ const TrackingTypeModel = {
 
   async create(data) {
     const type = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name: String(data.name).trim(),
       description: data.description || '',
       icon: data.icon || '📍',

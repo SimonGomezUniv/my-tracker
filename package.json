@@ -1,6 +1,6 @@
 {
   "name": "node-tracker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Application de tracking d'informations - PWA",
   "main": "server.js",
   "scripts": {

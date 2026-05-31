@@ -340,7 +340,7 @@ function bindEntryFormEvents(type, existingEntry, selectedTagIds) {
       if (existingEntry) {
         await TrackingEntryModel.update(existingEntry.id, { timestamp, data, note, tags: [...selectedTagIds] });
         showToast('Entry updated.', 'success');
-        router.navigate('history');
+        router.navigate('dashboard');
       } else {
         await TrackingEntryModel.create({ trackingTypeId: type.id, timestamp, data, note, tags: [...selectedTagIds] });
         showToast(`"${type.name}" entry saved.`, 'success');
