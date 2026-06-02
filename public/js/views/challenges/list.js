@@ -70,7 +70,7 @@ async function renderChallengesList() {
         </div>`).join('');
 
       return `
-        <article class="item-card" style="--card-color: ${escapeHtml(challenge.color || '#2563eb')}">
+        <article class="item-card">
           <div class="item-card-header">
             <span class="item-icon">${escapeHtml(challenge.icon || '🎯')}</span>
             <div class="item-card-actions">

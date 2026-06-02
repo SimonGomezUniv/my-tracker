@@ -218,7 +218,7 @@ export default async function challengesEntryView(params) {
     <div class="view-entry-form">
       <a href="#/challenges" class="btn btn-ghost btn-back">← Back to challenges</a>
 
-      <div class="entry-form-header" style="border-left-color: ${escapeHtml(challenge.color || '#2563eb')}">
+      <div class="entry-form-header">
         <span class="entry-form-icon">${escapeHtml(challenge.icon || '🎯')}</span>
         <div>
           <h2 class="entry-form-type-name">${escapeHtml(challenge.name)}</h2>

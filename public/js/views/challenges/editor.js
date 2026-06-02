@@ -76,10 +76,6 @@ export default async function challengesEditorView(params) {
               <label class="form-label" for="challenge-icon">Icon</label>
               <input id="challenge-icon" class="form-input form-input--center" type="text" maxlength="2" value="${escapeHtml(existing?.icon || '🎯')}" />
             </div>
-            <div class="form-group form-group--narrow">
-              <label class="form-label" for="challenge-color">Color</label>
-              <input id="challenge-color" class="form-color" type="color" value="${escapeHtml(existing?.color || '#2563eb')}" />
-            </div>
           </div>
           <div class="form-row">
             <div class="form-group" style="flex:1">
@@ -300,7 +296,6 @@ function bindChallengesEditorEvents(existing, trackingTypes) {
       description: document.getElementById('challenge-description').value.trim(),
       category: document.getElementById('challenge-category').value.trim(),
       icon: document.getElementById('challenge-icon').value.trim() || '🎯',
-      color: document.getElementById('challenge-color').value,
       periodMode: mode,
       startDate: document.getElementById('challenge-start-date').value,
       endDate: document.getElementById('challenge-end-date').value,

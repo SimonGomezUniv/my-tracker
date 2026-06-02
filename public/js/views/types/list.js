@@ -34,7 +34,7 @@ async function renderTypesList() {
   container.innerHTML = `
     <div class="items-grid">
       ${types.map(t => `
-        <div class="item-card" style="--card-color: ${escapeHtml(t.color || '#6366f1')}">
+        <div class="item-card">
           <div class="item-card-header">
             <span class="item-icon">${escapeHtml(t.icon || '📍')}</span>
             <div class="item-card-actions">

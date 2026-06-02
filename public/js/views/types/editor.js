@@ -64,11 +64,6 @@ export default async function typesEditorView(params) {
                 value="${escapeHtml(existingType?.icon || '📍')}"
                 maxlength="2" placeholder="📍" />
             </div>
-            <div class="form-group form-group--narrow">
-              <label class="form-label" for="type-color">Color</label>
-              <input type="color" id="type-color" class="form-color"
-                value="${existingType?.color || '#6366f1'}" />
-            </div>
           </div>
           <div class="form-group">
             <label class="form-label" for="type-description">Description</label>
@@ -256,7 +251,6 @@ function bindTypesEditorEvents(existingType, selectedTagIds) {
       name,
       description: document.getElementById('type-description').value.trim(),
       icon: document.getElementById('type-icon').value.trim() || '📍',
-      color: document.getElementById('type-color').value,
       fields: [...fields],
       tags: [...selectedTagIds],
     };

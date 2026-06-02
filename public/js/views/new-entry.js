@@ -63,7 +63,7 @@ async function renderTypeSelector() {
         <p class="view-subtitle" style="margin-bottom:20px">Choose the tracking type for this entry.</p>
         <div class="items-grid">
           ${types.map(t => `
-            <a href="#/new-entry/${escapeHtml(t.id)}" class="item-card item-card--link" style="--card-color: ${escapeHtml(t.color || '#6366f1')}">
+            <a href="#/new-entry/${escapeHtml(t.id)}" class="item-card item-card--link">
               <div class="item-card-header"><span class="item-icon">${escapeHtml(t.icon || '📍')}</span></div>
               <div class="item-card-body">
                 <h3 class="item-name">${escapeHtml(t.name)}</h3>
@@ -118,7 +118,7 @@ function renderEntryForm(type, existingEntry, allTags) {
   const html = `
     <div class="view-entry-form">
       <a href="${backUrl}" class="btn btn-ghost btn-back">← Back</a>
-      <div class="entry-form-header" style="border-left-color: ${escapeHtml(type.color || '#6366f1')}">
+      <div class="entry-form-header">
         <span class="entry-form-icon">${escapeHtml(type.icon || '📍')}</span>
         <div>
           <h2 class="entry-form-type-name">${escapeHtml(type.name)}</h2>

@@ -66,7 +66,7 @@ export default async function dashboardView() {
   const widgetsData = renderHomeWidgets(homeConfig.widgets, { types, entries, tags, challenges });
 
   const quickLinks = types.map(t => `
-    <a href="#/new-entry/${t.id}" class="quick-card" style="--color: ${t.color || '#6366f1'}">
+    <a href="#/new-entry/${t.id}" class="quick-card">
       <span class="quick-icon">${t.icon || '📍'}</span>
       <span class="quick-name">${t.name}</span>
     </a>`).join('');
@@ -125,7 +125,7 @@ function renderTodayChecklist(challenges, entries, typeMap) {
         ? 'Done / Not done'
         : `${todayValue} / ${item.targetValue}${item.unit ? ` ${item.unit}` : ''}`;
       return `
-        <a class="checklist-item" href="#/new-entry/${escapeHtml(item.trackingTypeId)}" style="--checklist-color:${escapeHtml(challenge.color || '#2563eb')}">
+        <a class="checklist-item" href="#/new-entry/${escapeHtml(item.trackingTypeId)}">
           <div class="checklist-item__header">
             <strong>${escapeHtml(item.name)}</strong>
             <span>${escapeHtml(type?.icon || '📍')} ${escapeHtml(type?.name || 'Tracking')}</span>
@@ -265,7 +265,7 @@ function renderChallengeCardWidget(challenge, allEntries, typeMap) {
     </div>`).join('');
 
   return `
-    <article class="item-card" style="--card-color: ${escapeHtml(challenge.color || '#2563eb')}">
+    <article class="item-card home-widget-card--challenge-item">
       <div class="item-card-header">
         <span class="item-icon">${escapeHtml(challenge.icon || '🎯')}</span>
         <div class="item-card-actions">
@@ -322,7 +322,7 @@ function renderChallengeSummaryWidget(challenges, entries) {
       </div>
       <div class="challenge-widget-list">
         ${challengeStats.slice(0, 3).map(({ challenge, stats }) => `
-          <a href="#/challenges/entry/${encodeURIComponent(challenge.id)}" class="challenge-widget-item" style="--challenge-color:${escapeHtml(challenge.color || '#2563eb')}">
+          <a href="#/challenges/entry/${encodeURIComponent(challenge.id)}" class="challenge-widget-item">
             <div class="challenge-widget-item__header">
               <span>${escapeHtml(challenge.icon || '🎯')} ${escapeHtml(challenge.name)}</span>
               <strong>${stats.completedItems}/${stats.itemCount}</strong>
@@ -551,11 +551,6 @@ const STOPWORDS = new Set([
   'have','has','had','do','did','my','your','his','her','its','our','their',
 ]);
 
-const WORD_COLORS = [
-  'var(--color-primary)', '#ec4899', '#f59e0b',
-  '#10b981', '#3b82f6', '#8b5cf6', '#ef4444',
-];
-
 function tokenize(text) {
   return text
     .toLowerCase()
@@ -585,9 +580,7 @@ function renderWordCloudInline(freq) {
   const wordsHtml = words.map(([word, count]) => {
     const size = (0.72 + (count / max) * 1.4).toFixed(2);
     const weight = count / max > 0.5 ? '600' : '400';
-    const colorIdx = word.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % WORD_COLORS.length;
-    const color = WORD_COLORS[colorIdx];
-    return `<span class="word-cloud-word" style="font-size:${size}rem;font-weight:${weight};color:${color}" title="${count}x">${escapeHtml(word)}</span>`;
+    return `<span class="word-cloud-word" style="font-size:${size}rem;font-weight:${weight};color:var(--color-text)" title="${count}x">${escapeHtml(word)}</span>`;
   }).join('');
   return `<div class="word-cloud">${wordsHtml}</div>`;
 }

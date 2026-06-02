@@ -138,7 +138,7 @@ export function renderEntryCard(entry, type, showActions = false) {
     <div class="entry-item">
       <div class="entry-item-top">
         <div class="entry-item-meta">
-          <span class="entry-item-icon" style="color:${escapeHtml(type.color || '#6366f1')}">${escapeHtml(type.icon || '📍')}</span>
+          <span class="entry-item-icon">${escapeHtml(type.icon || '📍')}</span>
           <span class="entry-item-type">${escapeHtml(type.name)}</span>
           <span class="entry-item-date">${date}</span>
         </div>
