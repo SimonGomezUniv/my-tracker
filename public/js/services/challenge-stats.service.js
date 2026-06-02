@@ -108,14 +108,17 @@ export function computeChallengeItemStats(challenge, item, trackingEntries = [])
 
   const elapsedCount = Math.max(1, elapsedDays.length);
   const successRate = Math.round((completedDays / elapsedCount) * 100);
-
-  const progressValue = item.challengeType === 'cumulative' || item.challengeType === 'duration'
-    ? totalValue
-    : completedDays;
-  const progress = Math.max(0, Math.min(100, Math.round((progressValue / item.targetValue) * 100)));
-
-  const isCompleted = progress >= 100;
   const hasEnded = todayKey > endDate;
+
+  const isRecurringDailyObjective = item.challengeType === 'boolean' || item.challengeType === 'daily';
+  const periodDayCount = Math.max(1, periodDays.length);
+  const progress = isRecurringDailyObjective
+    ? Math.max(0, Math.min(100, Math.round((completedDays / periodDayCount) * 100)))
+    : Math.max(0, Math.min(100, Math.round(((item.challengeType === 'cumulative' || item.challengeType === 'duration') ? totalValue : completedDays) / item.targetValue * 100)));
+
+  const isCompleted = isRecurringDailyObjective
+    ? hasEnded && completedDays === periodDays.length
+    : progress >= 100;
   const status = isCompleted ? 'completed' : (hasEnded ? 'failed' : 'active');
 
   return {

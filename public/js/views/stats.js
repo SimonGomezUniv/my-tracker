@@ -174,7 +174,7 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set(), 
       </div>
     </section>` : '';
 
-  const calendarHtml = renderStatsCalendar(entries, type, end);
+  const calendarHtml = renderStatsCalendar(entries, type, start, end);
 
   // Nuage de mots (notes + champs string)
   const wordCloudHtml = renderWordCloud(buildWordFrequency(entries, type, { includeNotes }));
@@ -203,60 +203,89 @@ async function renderStatsResults(typeId, start, end, filterTagIds = new Set(), 
     </section>`;
 }
 
-function renderStatsCalendar(entries, type, endDate) {
-  if (!entries.length) return '';
+function getMonthsInRange(startDate, endDate) {
+  const months = [];
+  const cursor = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+  const limit = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
 
-  const focus = new Date(endDate);
-  const year = focus.getFullYear();
-  const month = focus.getMonth();
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const startOffset = (firstDay.getDay() + 6) % 7;
-  const totalCells = Math.ceil((startOffset + lastDay.getDate()) / 7) * 7;
+  while (cursor <= limit) {
+    months.push({ year: cursor.getFullYear(), month: cursor.getMonth() });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+
+  return months;
+}
+
+function renderStatsCalendar(entries, type, startDate, endDate) {
+  if (!entries.length) return '';
 
   const byDay = new Map();
   entries.forEach(e => {
     const d = new Date(e.timestamp);
-    if (d.getFullYear() !== year || d.getMonth() !== month) return;
     const key = d.toISOString().slice(0, 10);
     const arr = byDay.get(key) || [];
     arr.push(e);
     byDay.set(key, arr);
   });
 
-  const monthLabel = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-  const cells = [];
-  for (let i = 0; i < totalCells; i++) {
-    const dayNum = i - startOffset + 1;
-    if (dayNum < 1 || dayNum > lastDay.getDate()) {
-      cells.push('<div class="calendar-cell calendar-cell--empty"></div>');
-      continue;
+  const months = getMonthsInRange(startDate, endDate);
+  const monthBlocks = months.map(({ year, month }) => {
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const rangeStartKey = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
+    const rangeEndKey = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
+    const monthStartKey = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    const monthEndKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`;
+    const activeStartKey = monthStartKey < rangeStartKey ? rangeStartKey : monthStartKey;
+    const activeEndKey = monthEndKey > rangeEndKey ? rangeEndKey : monthEndKey;
+    const activeDays = [];
+    const cursor = new Date(`${activeStartKey}T00:00:00`);
+    const limit = new Date(`${activeEndKey}T00:00:00`);
+    while (cursor <= limit) {
+      activeDays.push(cursor.toISOString().slice(0, 10));
+      cursor.setDate(cursor.getDate() + 1);
     }
 
-    const d = new Date(year, month, dayNum);
-    const key = d.toISOString().slice(0, 10);
-    const dayEntries = byDay.get(key) || [];
-    const hasData = dayEntries.length > 0;
-    const value = hasData ? computeCalendarValue(dayEntries, type) : '';
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const totalCells = Math.ceil((startOffset + lastDay.getDate()) / 7) * 7;
+    const cells = [];
 
-    cells.push(`
-      <div class="calendar-cell ${hasData ? 'calendar-cell--active' : ''}">
-        <span class="calendar-day">${dayNum}</span>
-        ${hasData ? `<span class="calendar-icon">${escapeHtml(type.icon || '📍')}</span>` : ''}
-        ${hasData ? `<span class="calendar-value">${escapeHtml(value)}</span>` : ''}
-      </div>`);
-  }
+    for (let i = 0; i < totalCells; i++) {
+      const dayNum = i - startOffset + 1;
+      if (dayNum < 1 || dayNum > lastDay.getDate()) {
+        cells.push('<div class="calendar-cell calendar-cell--empty"></div>');
+        continue;
+      }
+
+      const d = new Date(year, month, dayNum);
+      const key = d.toISOString().slice(0, 10);
+      const inRange = key >= rangeStartKey && key <= rangeEndKey;
+      const dayEntries = inRange ? (byDay.get(key) || []) : [];
+      const hasData = dayEntries.length > 0;
+      const value = hasData ? computeCalendarValue(dayEntries, type) : '';
+
+      cells.push(`
+        <div class="calendar-cell ${inRange ? 'calendar-cell--active' : 'calendar-cell--empty'} ${hasData ? 'calendar-cell--active' : ''}">
+          <span class="calendar-day">${dayNum}</span>
+          ${hasData ? `<span class="calendar-icon">${escapeHtml(type.icon || '📍')}</span>` : ''}
+          ${hasData ? `<span class="calendar-value">${escapeHtml(value)}</span>` : ''}
+        </div>`);
+    }
+
+    return `
+      <section class="calendar-month-block">
+        <div class="calendar-widget-header">${escapeHtml(firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }))}</div>
+        <div class="calendar-weekdays">${weekDays.map(d => `<span>${d}</span>`).join('')}</div>
+        <div class="calendar-grid">${cells.join('')}</div>
+      </section>`;
+  }).join('');
 
   return `
     <section class="editor-section">
       <h2 class="editor-section-title">Calendar</h2>
-      <div class="calendar-widget">
-        <div class="calendar-widget-header">${escapeHtml(monthLabel)}</div>
-        <div class="calendar-weekdays">${weekDays.map(d => `<span>${d}</span>`).join('')}</div>
-        <div class="calendar-grid">${cells.join('')}</div>
-      </div>
+      <div class="calendar-widget calendar-widget--range">${monthBlocks}</div>
     </section>`;
 }
 

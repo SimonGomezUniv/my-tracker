@@ -932,8 +932,17 @@
   .challenge-item-preview__header,
   .challenge-item-preview__meta,
   .challenge-item-section__header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .challenge-item-preview__header {
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .challenge-item-preview__meta {
+    gap: 4px;
   }
 }
 
@@ -1043,7 +1052,8 @@
    ============================================================ */
 
 .view-history {
-  max-width: 780px;
+  width: 100%;
+  max-width: 1100px;
 }
 
 .history-filters {
@@ -1134,7 +1144,8 @@
    ============================================================ */
 
 .view-stats {
-  max-width: 820px;
+  width: 100%;
+  max-width: 1100px;
 }
 
 .chart-container {
@@ -1195,7 +1206,8 @@
    ============================================================ */
 
 .view-settings {
-  max-width: 600px;
+  width: 100%;
+  max-width: 1100px;
 }
 
 .settings-section {
