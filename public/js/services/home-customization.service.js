@@ -17,11 +17,11 @@ const DEFAULT_CONFIG = {
   },
   quickEntryCompact: true,
   showChecklist: true,
-  sectionOrder: ['quick', 'checklist', 'widgets', 'history'],
+  sectionOrder: ['stats', 'quick', 'checklist', 'widgets', 'history'],
   widgets: [],
 };
 
-const DEFAULT_SECTION_ORDER = ['quick', 'checklist', 'widgets', 'history'];
+const DEFAULT_SECTION_ORDER = ['stats', 'quick', 'checklist', 'widgets', 'history'];
 
 function sanitizeWidget(raw) {
   if (!raw || typeof raw !== 'object') return null;
@@ -82,6 +82,13 @@ function sanitizeSectionOrder(value) {
   DEFAULT_SECTION_ORDER.forEach(key => {
     if (!seen.has(key)) order.push(key);
   });
+
+  // Ensure legacy configs (created before stats section existed) keep stats available at top.
+  if (!requested.includes('stats')) {
+    const withoutStats = order.filter(key => key !== 'stats');
+    return ['stats', ...withoutStats];
+  }
+
   return order;
 }
 

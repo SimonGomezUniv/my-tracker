@@ -27,6 +27,7 @@ import {
 import { escapeHtml, showToast } from '../utils.js';
 
 const SECTION_LABELS = {
+  stats: 'Top stats',
   quick: 'Quick entry',
   checklist: 'Today checklist',
   widgets: 'Custom stats',

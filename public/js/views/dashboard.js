@@ -75,12 +75,13 @@ export default async function dashboardView() {
     ? ''
     : renderTodayChecklist(challenges, entries, typeMap);
 
+  const statsHtml = countCards.length > 0
+    ? `<section class="dashboard-stats">${countCards.join('')}</section>`
+    : '';
+
   const html = `
     <div class="view-dashboard">
-
-      ${countCards.length > 0 ? `<section class="dashboard-stats">${countCards.join('')}</section>` : ''}
-
-      ${renderSections({ types, quickLinks, recentHtml, entries, widgetsData, checklistHtml, homeConfig }, homeConfig.sectionOrder)}
+      ${renderSections({ types, quickLinks, recentHtml, entries, widgetsData, checklistHtml, statsHtml, homeConfig }, homeConfig.sectionOrder)}
 
     </div>`;
 
@@ -444,6 +445,7 @@ function renderSections(data, sectionOrder = []) {
   const compactQuickEntry = data.homeConfig?.quickEntryCompact !== false;
 
   const sectionMap = {
+    stats: data.statsHtml || '',
     quick: data.types.length > 0
       ? `
       <section class="dashboard-section">
@@ -502,8 +504,8 @@ function renderSections(data, sectionOrder = []) {
   };
 
   const normalized = Array.isArray(sectionOrder) ? sectionOrder : [];
-  const ordered = [...normalized, 'quick', 'checklist', 'widgets', 'history']
-    .filter((key, idx, arr) => ['quick', 'checklist', 'widgets', 'history'].includes(key) && arr.indexOf(key) === idx);
+  const ordered = [...normalized, 'stats', 'quick', 'checklist', 'widgets', 'history']
+    .filter((key, idx, arr) => ['stats', 'quick', 'checklist', 'widgets', 'history'].includes(key) && arr.indexOf(key) === idx);
 
   return ordered.map(key => sectionMap[key]).join('');
 }
