@@ -13,7 +13,7 @@ import {
   computeNumericStats,
   computeDurationTotal,
 } from '../services/stats.service.js';
-import { escapeHtml, formatDate } from '../utils.js';
+import { escapeHtml, formatDate, toLocalDateKey } from '../utils.js';
 
 export default async function statsView() {
   const [types, allTags] = await Promise.all([
@@ -36,8 +36,10 @@ export default async function statsView() {
     .map(p => `<option value="${p.value}" ${p.value === '30d' ? 'selected' : ''}>${p.label}</option>`)
     .join('');
 
-  const today    = new Date().toISOString().slice(0, 10);
-  const monthAgo = new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10);
+  const today = toLocalDateKey();
+  const monthAgoDate = new Date();
+  monthAgoDate.setDate(monthAgoDate.getDate() - 29);
+  const monthAgo = toLocalDateKey(monthAgoDate);
 
   const tagChips = allTags.map(t => `
     <span class="chip chip--sm" data-id="${escapeHtml(t.id)}" style="--chip-bg: ${escapeHtml(t.color)}">
@@ -221,8 +223,7 @@ function renderStatsCalendar(entries, type, startDate, endDate) {
 
   const byDay = new Map();
   entries.forEach(e => {
-    const d = new Date(e.timestamp);
-    const key = d.toISOString().slice(0, 10);
+    const key = toLocalDateKey(e.timestamp);
     const arr = byDay.get(key) || [];
     arr.push(e);
     byDay.set(key, arr);
@@ -260,7 +261,7 @@ function renderStatsCalendar(entries, type, startDate, endDate) {
       }
 
       const d = new Date(year, month, dayNum);
-      const key = d.toISOString().slice(0, 10);
+      const key = toLocalDateKey(d);
       const inRange = key >= rangeStartKey && key <= rangeEndKey;
       const dayEntries = inRange ? (byDay.get(key) || []) : [];
       const hasData = dayEntries.length > 0;
